@@ -1,8 +1,8 @@
-import express = require('express');
+import express from 'express'
 
-const shopController = require('../controllers/shop');
+import * as shopController from '../controllers/shop'
 
-const router = express.Router();
+export const router = express.Router();
 
 router.get('/', shopController.getIndex);
 
@@ -19,5 +19,3 @@ router.post('/cart-delete-item', shopController.postCartDeleteProduct);
 router.get('/orders', shopController.getOrders);
 
 router.get('/checkout', shopController.getCheckout);
-
-module.exports = router;

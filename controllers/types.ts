@@ -1,3 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 
-export type ExpressCB = (req: Request, res: Response, next: NextFunction) => void;
+type ExpressCB = (req: Request, res: Response, next: NextFunction) => void;
+
+export { ExpressCB };

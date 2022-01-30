@@ -1,8 +1,8 @@
-import express = require('express');
+import express from 'express';
 
-const adminController = require('../controllers/admin');
+import * as adminController from '../controllers/admin'
 
-const router = express.Router();
+export const router = express.Router();
 
 router.get('/add-product', adminController.getAddProduct);
 
@@ -15,5 +15,3 @@ router.get('/edit-product/:productId', adminController.getEditProduct);
 router.post('/edit-product', adminController.postEditProduct);
 
 router.post('/delete-product', adminController.postDeleteProduct);
-
-module.exports = router;

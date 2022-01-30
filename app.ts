@@ -1,11 +1,10 @@
-import path = require('path');
+import path from 'path'
+import express from 'express';
+import bodyParser from 'body-parser';
 
-import express = require('express');
-import bodyParser = require('body-parser');
-
-const adminRoutes = require('./routes/admin');
-const shopRoutes = require('./routes/shop');
-const errorController = require('./controllers/error');
+import { router as adminRoutes } from './routes/admin';
+import { router as shopRoutes } from './routes/shop';
+import { get404 } from './controllers/error';
 
 const app = express();
 
@@ -32,7 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
-app.use(errorController.get404);
+app.use(get404);
 
 /*
  * Assignment
@@ -48,3 +47,5 @@ app.use(errorController.get404);
 // });
 
 app.listen(3030);
+
+module.exports = app;

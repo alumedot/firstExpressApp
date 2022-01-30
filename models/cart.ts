@@ -1,16 +1,16 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path'
 
-const rootDir = require('../util/path');
+import { rootDir } from '../util/path'
 
 const p = path.join(rootDir, 'data', 'cart.json');
 
-module.exports = class Cart {
+export class Cart {
   static addProduct(id, productPrice) {
     fs.readFile(p, (err, fileContent) => {
       let cart = { products: [], totalPrice: 0};
       if (!err) {
-        cart = JSON.parse(fileContent);
+        cart = JSON.parse(String(fileContent));
       }
       const existingProductIndex = cart.products.findIndex(product => product.id === id);
       const existingProduct = cart.products[existingProductIndex];
@@ -34,7 +34,7 @@ module.exports = class Cart {
   static deleteProduct(id: string, productPrice: number) {
     fs.readFile(p, (err, fileContent) => {
       if (err) return;
-      const cart = JSON.parse(fileContent);
+      const cart = JSON.parse(String(fileContent));
       const updatedCart = { ...cart };
       const product = updatedCart.products.find(prod => prod.id === id);
       if (!product) { return; }
@@ -46,7 +46,7 @@ module.exports = class Cart {
 
   static getCart(cb) {
     fs.readFile(p, (err, fileContent) => {
-      const cart = JSON.parse(fileContent);
+      const cart = JSON.parse(String(fileContent));
       if (err) {
         cb(null);
       } else {
