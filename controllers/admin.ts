@@ -27,17 +27,17 @@ export const getEditProduct: ExpressCB = (req, res, next) => {
   }
 
   const { productId } = req.params;
-  Product.findById(productId, product => {
-    if (!product) {
-      res.redirect('/');
-    }
-    res.render('admin/edit-product', {
-      product,
-      pageTitle: 'Edit Product',
-      path: '/admin/edit-product',
-      editing: editMode,
-    });
-  });
+  // Product.findById(productId, product => {
+  //   if (!product) {
+  //     res.redirect('/');
+  //   }
+  //   res.render('admin/edit-product', {
+  //     product,
+  //     pageTitle: 'Edit Product',
+  //     path: '/admin/edit-product',
+  //     editing: editMode,
+  //   });
+  // });
 };
 
 export const postEditProduct: ExpressCB = (req, res, next) => {

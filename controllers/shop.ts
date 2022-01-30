@@ -18,13 +18,15 @@ export const getProducts = async (req, res, next) => {
 
 export const getProduct: ExpressCB = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.findById(prodId, product => {
-    res.render('shop/product-detail', {
-      product,
-      pageTitle: product.title,
-      path: '/products',
+  Product.findById(prodId)
+    .then(([products]) => {
+      res.render('shop/product-detail', {
+        product: products[0],
+        pageTitle: products[0].title,
+        path: '/products',
+      })
     })
-  });
+    .catch(err => console.log(err));
 };
 
 export const getIndex = (req, res, next) => {
@@ -71,18 +73,18 @@ export const getCart = (req, res, next) => {
 
 export const postCart: ExpressCB = (req, res, next) => {
   const { productId } = req.body;
-  Product.findById(productId, (product) => {
-    Cart.addProduct(productId, product.price);
-  });
+  // Product.findById(productId, (product) => {
+  //   Cart.addProduct(productId, product.price);
+  // });
   res.redirect('/cart');
 };
 
 export const postCartDeleteProduct: ExpressCB = (req, res, next) => {
-  const { productId } = req.body;
-  Product.findById(productId, product => {
-    Cart.deleteProduct(productId, product.price);
-    res.redirect('/cart');
-  })
+  // const { productId } = req.body;
+  // Product.findById(productId, product => {
+  //   Cart.deleteProduct(productId, product.price);
+  //   res.redirect('/cart');
+  // })
 }
 
 export const getOrders = (req, res, next) => {
