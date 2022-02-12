@@ -17,7 +17,10 @@ export const postAddProduct: ExpressCB = (req, res, next) => {
     imageUrl,
     description
   })
-    .then(() =>console.log('Created Product'))
+    .then(() => {
+      console.log('Created Product');
+      res.redirect('/admin/products');
+    })
     .catch((error) => console.log(error));
 };
 
@@ -74,7 +77,14 @@ export const getProducts: ExpressCB = (req, res, next) => {
 };
 
 export const postDeleteProduct: ExpressCB = (req, res, next) => {
-  // const { productId } = req.body;
-  // Product.deleteById(productId);
-  // res.redirect('/admin/products');
+  const { productId } = req.body;
+  Product.findByPk(productId)
+    .then((product) => {
+      return product.destroy()
+    })
+    .then(() => {
+      console.log(`DESTROYED PRODUCT WITH ID - ${productId}`);
+      res.redirect('/admin/products');
+    })
+    .catch((error) => console.log(error))
 }
