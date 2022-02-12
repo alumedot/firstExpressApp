@@ -7,6 +7,7 @@ import { router as shopRoutes } from './routes/shop';
 import { get404 } from './controllers/error';
 import { sequelize } from './util/database';
 import { Product } from './models/product';
+import { User } from './models/user';
 
 // console.log('sequel', sequel);
 
@@ -28,9 +29,14 @@ app.use(shopRoutes);
 
 app.use(get404);
 
-Product.sync().catch((err) => console.log(err));
+// TODO delete later if sync works fine
+// Product.sync().catch((err) => console.log(err));
+// User.sync().catch((err) => console.log(err));
 
-sequelize.sync()
+Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+User.hasMany(Product);
+
+sequelize.sync({ force: true })
   .then(result => {
     app.listen(3030);
   })
