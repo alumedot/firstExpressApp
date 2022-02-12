@@ -21,41 +21,56 @@ export const postAddProduct: ExpressCB = (req, res, next) => {
     .catch((error) => console.log(error));
 };
 
-export const getEditProduct: ExpressCB = (req, res, next) => {
+export const getEditProduct: ExpressCB = (req, res ) => {
   const editMode = req.query.edit;
   if (!editMode) {
     res.redirect('/');
   }
 
   const { productId } = req.params;
-  // Product.findById(productId, product => {
-  //   if (!product) {
-  //     res.redirect('/');
-  //   }
-  //   res.render('admin/edit-product', {
-  //     product,
-  //     pageTitle: 'Edit Product',
-  //     path: '/admin/edit-product',
-  //     editing: editMode,
-  //   });
-  // });
+
+  Product.findByPk(productId)
+    .then((product) => {
+      if (!product) {
+        res.redirect('/');
+      }
+      res.render('admin/edit-product', {
+        product,
+        pageTitle: 'Edit Product',
+        path: '/admin/edit-product',
+        editing: editMode,
+      });
+    })
+    .catch((error) => console.log(error))
 };
 
-export const postEditProduct: ExpressCB = (req, res, next) => {
-  // const { productId, title, imageUrl, description, price } = req.body;
-  // const updatedProduct = new Product(productId, title, imageUrl, description, price);
-  // updatedProduct.save();
-  // res.redirect('/admin/products');
+export const postEditProduct: ExpressCB = (req, res ) => {
+  const { productId, title, imageUrl, description, price } = req.body;
+  Product.findByPk(productId)
+    .then((product) => {
+      product.title = title;
+      product.price = price;
+      product.description = description;
+      product.imageUrl = imageUrl;
+      return product.save();
+    })
+    .then(() => {
+      console.log('UPDATED PRODUCTS');
+      res.redirect('/admin/products');
+    })
+    .catch((error) => console.log(error))
 }
 
 export const getProducts: ExpressCB = (req, res, next) => {
-  // Product.fetchAll((products) => {
-  //   res.render('admin/products', {
-  //     products,
-  //     pageTitle: 'Admin Products',
-  //     path: '/admin/products',
-  //   });
-  // });
+  Product.findAll()
+    .then((products) => {
+      res.render('admin/products', {
+        products,
+        pageTitle: 'Admin Products',
+        path: '/admin/products',
+      });
+    })
+    .catch((error) => console.log(error));
 };
 
 export const postDeleteProduct: ExpressCB = (req, res, next) => {

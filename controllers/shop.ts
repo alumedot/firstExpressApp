@@ -14,17 +14,17 @@ export const getProducts = async (req, res, next) => {
     .catch(error => console.log(error));
 };
 
-export const getProduct: ExpressCB = (req, res, next) => {
-  // const prodId = req.params.productId;
-  // Product.findById(prodId)
-  //   .then(([products]) => {
-  //     res.render('shop/product-detail', {
-  //       product: products[0],
-  //       pageTitle: products[0].title,
-  //       path: '/products',
-  //     })
-  //   })
-  //   .catch(err => console.log(err));
+export const getProduct: ExpressCB = (req, res ) => {
+  const prodId = req.params.productId;
+  Product.findByPk(prodId)
+    .then((product) => {
+      res.render('shop/product-detail', {
+        product,
+        pageTitle: product.title,
+        path: '/products',
+      })
+    })
+    .catch((error) => console.log(error));
 };
 
 export const getIndex = (req, res) => {

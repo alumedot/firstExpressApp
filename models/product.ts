@@ -1,7 +1,17 @@
-import { INTEGER, STRING, DOUBLE } from 'sequelize';
+import { INTEGER, STRING, DOUBLE, Model } from 'sequelize';
 import { sequelize } from '../util/database';
 
-export const Product = sequelize.define('product', {
+export interface IProduct {
+  title: string;
+  id: number;
+  price: number;
+  imageUrl: string;
+  description: string;
+}
+
+interface IProductInstance extends Model<IProduct>, IProduct {}
+
+export const Product = sequelize.define<IProductInstance>('product', {
   id: {
     type: INTEGER,
     autoIncrement: true,
