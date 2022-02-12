@@ -5,18 +5,13 @@ import bodyParser from 'body-parser';
 import { router as adminRoutes } from './routes/admin';
 import { router as shopRoutes } from './routes/shop';
 import { get404 } from './controllers/error';
+import { sequelize } from './util/database';
+import { Product } from './models/product';
+
+// console.log('sequel', sequel);
 
 const app = express();
 
-/*
-* config for `handlebars`
-* by default `views/layouts/`
-* */
-// app.engine('hbs', expressHbs({
-//   layoutsDir: 'views/layouts/',
-//   defaultLayout: 'main-layout',
-//   extname: 'hbs',
-// }));
 app.set('view engine', 'ejs');
 
 /*
@@ -33,19 +28,14 @@ app.use(shopRoutes);
 
 app.use(get404);
 
-/*
- * Assignment
- * */
-// app.use('/users', (req, res, next) => {
-//   console.log('/users middleware');
-//   res.send('<h1>Users middleware</h1>')
-// });
-//
-// app.use('/', (req, res, next) => {
-//   console.log('/ main middleware');
-//   res.send('<h1>Home page</h1>');
-// });
+Product.sync().catch((err) => console.log(err));
 
-app.listen(3030);
+sequelize.sync()
+  .then(result => {
+    app.listen(3030);
+  })
+  .catch((error) => {
+    console.log('error', error);
+  })
 
 module.exports = app;

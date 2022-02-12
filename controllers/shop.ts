@@ -3,53 +3,40 @@ import { Cart } from '../models/cart'
 import type { ExpressCB } from './types';
 
 export const getProducts = async (req, res, next) => {
-  try {
-    const [rows] = await Product.fetchAll();
-    console.log('rows', rows);
-    res.render('shop/product-list', {
-      products: rows || [],
-      pageTitle: 'All products',
-      path: '/products',
-    });
-  } catch(e) {
-    console.log(e);
-  }
+  Product.findAll()
+    .then((products) => {
+      res.render('shop/product-list', {
+        products: products || [],
+        pageTitle: 'All products',
+        path: '/products',
+      });
+    })
+    .catch(error => console.log(error));
 };
 
 export const getProduct: ExpressCB = (req, res, next) => {
-  const prodId = req.params.productId;
-  Product.findById(prodId)
-    .then(([products]) => {
-      res.render('shop/product-detail', {
-        product: products[0],
-        pageTitle: products[0].title,
-        path: '/products',
-      })
-    })
-    .catch(err => console.log(err));
+  // const prodId = req.params.productId;
+  // Product.findById(prodId)
+  //   .then(([products]) => {
+  //     res.render('shop/product-detail', {
+  //       product: products[0],
+  //       pageTitle: products[0].title,
+  //       path: '/products',
+  //     })
+  //   })
+  //   .catch(err => console.log(err));
 };
 
-export const getIndex = (req, res, next) => {
-  // Product.fetchAll((products) => {
-  //   res.render('shop/index', {
-  //     products,
-  //     pageTitle: 'Shop',
-  //     path: '/',
-  //   });
-  // });
-
-  Product.fetchAll()
-    .then(([rows, fieldData]) => {
-      console.log('[rows, fieldData]', rows);
+export const getIndex = (req, res) => {
+  Product.findAll()
+    .then((products) => {
       res.render('shop/index', {
-        products: rows,
+        products,
         pageTitle: 'Shop',
         path: '/',
       });
     })
-    .catch((err) => {
-    console.log('err', err);
-  });
+    .catch(error => console.log(error));
 };
 
 export const getCart = (req, res, next) => {

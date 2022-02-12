@@ -1,5 +1,4 @@
 import { ExpressCB } from './types';
-
 import { Product } from '../models/product'
 
 export const getAddProduct = (req, res, next) => {
@@ -12,12 +11,14 @@ export const getAddProduct = (req, res, next) => {
 
 export const postAddProduct: ExpressCB = (req, res, next) => {
   const { title, imageUrl, price, description } = req.body;
-  const product = new Product(null, title, imageUrl, description, price );
-  product.save()
-    .then(() => {
-      res.redirect('/');
-    })
-    .catch((err) => console.log(err))
+  Product.create({
+    title,
+    price,
+    imageUrl,
+    description
+  })
+    .then(() =>console.log('Created Product'))
+    .catch((error) => console.log(error));
 };
 
 export const getEditProduct: ExpressCB = (req, res, next) => {
@@ -41,10 +42,10 @@ export const getEditProduct: ExpressCB = (req, res, next) => {
 };
 
 export const postEditProduct: ExpressCB = (req, res, next) => {
-  const { productId, title, imageUrl, description, price } = req.body;
-  const updatedProduct = new Product(productId, title, imageUrl, description, price);
-  updatedProduct.save();
-  res.redirect('/admin/products');
+  // const { productId, title, imageUrl, description, price } = req.body;
+  // const updatedProduct = new Product(productId, title, imageUrl, description, price);
+  // updatedProduct.save();
+  // res.redirect('/admin/products');
 }
 
 export const getProducts: ExpressCB = (req, res, next) => {
@@ -58,7 +59,7 @@ export const getProducts: ExpressCB = (req, res, next) => {
 };
 
 export const postDeleteProduct: ExpressCB = (req, res, next) => {
-  const { productId } = req.body;
-  Product.deleteById(productId);
-  res.redirect('/admin/products');
+  // const { productId } = req.body;
+  // Product.deleteById(productId);
+  // res.redirect('/admin/products');
 }
