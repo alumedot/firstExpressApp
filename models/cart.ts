@@ -5,7 +5,7 @@ export interface ICart {
   id: number;
 }
 
-interface ICartInstance extends Model<ICart>, ICart {}
+export interface ICartInstance extends Model<ICart>, ICart {}
 
 export const Cart = sequelize.define<ICartInstance>('cart', {
   id: {

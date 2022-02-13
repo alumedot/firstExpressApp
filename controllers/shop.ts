@@ -39,31 +39,71 @@ export const getIndex = (req, res) => {
     .catch(error => console.log(error));
 };
 
-export const getCart = (req, res, next) => {
-  // Cart.getCart(cart => {
-  //   // Product.fetchAll(products => {
-  //   //   const cartProducts = [];
-  //   //   for (const product of products) {
-  //   //     const cartProductDate = cart.products.find(prod => prod.id === product.id);
-  //   //     if (cartProductDate) {
-  //   //       cartProducts.push({ productData: product, qty: cartProductDate.qty });
-  //   //     }
-  //   //   }
-  //   //   res.render('shop/cart', {
-  //   //     pageTitle: 'Your Cart',
-  //   //     path: '/cart',
-  //   //     products: cartProducts,
-  //   //   });
-  //   // })
-  // });
+export const getCart = (req, res) => {
+  console.log('(req as any).user.cart', (req as any).user.cart);
+  (req as any).user.getCart()
+    .then((cart) => {
+      cart.getProducts()
+        .then((products) => {
+          res.render('shop/cart', {
+            pageTitle: 'Your Cart',
+            path: '/cart',
+            products,
+          });
+        })
+        .catch((error) => console.log(error))
+    })
+    .catch((error) => console.log(error));
 };
 
-export const postCart: ExpressCB = (req, res, next) => {
+export const postCart: ExpressCB = async (req, res, next) => {
   const { productId } = req.body;
+
+  const cart = await (req as any).user.getCart();
+  const cartProducts = await cart.getProducts({ where: { id: productId } });
+  const product = await Product.findByPk(productId);
+  const currentProduct = cartProducts[0];
+  let newQuantity = 1;
+
+
+  if (currentProduct) {
+    const oldQuantity = currentProduct.cartItem.quantity;
+    newQuantity = oldQuantity + 1;
+  }
+
+  await cart.addProduct(currentProduct || product, {
+    through: {
+      quantity: newQuantity,
+    }
+  });
+
+  res.redirect('/cart');
+
+  // (req as any).user
+  //   .getCart()
+  //   .then((cart) => {
+  //     return cart.gerProducts({ where: { id: productId } })
+  //   })
+  //   .then((products) => {
+  //     let product;
+  //     if (products.length) {
+  //       product = products[0];
+  //     }
+  //     let newQuantity = 1;
+  //     if (product) {
+  //
+  //     }
+  //     return Product.findByPk(productId)
+  //       .then((product) => {
+  //         return product
+  //       })
+  //       .catch((error) => console.log(error))
+  //   })
+  //   .catch((error) => console.log(error))
+
   // Product.findById(productId, (product) => {
   //   Cart.addProduct(productId, product.price);
   // });
-  res.redirect('/cart');
 };
 
 export const postCartDeleteProduct: ExpressCB = (req, res, next) => {
