@@ -78,43 +78,22 @@ export const postCart: ExpressCB = async (req, res, next) => {
   });
 
   res.redirect('/cart');
-
-  // (req as any).user
-  //   .getCart()
-  //   .then((cart) => {
-  //     return cart.gerProducts({ where: { id: productId } })
-  //   })
-  //   .then((products) => {
-  //     let product;
-  //     if (products.length) {
-  //       product = products[0];
-  //     }
-  //     let newQuantity = 1;
-  //     if (product) {
-  //
-  //     }
-  //     return Product.findByPk(productId)
-  //       .then((product) => {
-  //         return product
-  //       })
-  //       .catch((error) => console.log(error))
-  //   })
-  //   .catch((error) => console.log(error))
-
-  // Product.findById(productId, (product) => {
-  //   Cart.addProduct(productId, product.price);
-  // });
 };
 
-export const postCartDeleteProduct: ExpressCB = (req, res, next) => {
-  // const { productId } = req.body;
-  // Product.findById(productId, product => {
-  //   Cart.deleteProduct(productId, product.price);
-  //   res.redirect('/cart');
-  // })
+export const postCartDeleteProduct: ExpressCB = async (req, res) => {
+  const { productId } = req.body;
+
+  try {
+    const cart = await (req as any).user.getCart();
+    const products = await cart.getProducts({ where: { id: productId } });
+    await products[0].cartItem.destroy();
+    res.redirect('/cart');
+  } catch (e) {
+    console.log(e);
+  }
 }
 
-export const getOrders = (req, res, next) => {
+export const getOrders = (req, res) => {
   res.render('shop/orders', {
     pageTitle: 'Your Orders',
     path: '/orders',
