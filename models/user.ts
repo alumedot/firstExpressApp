@@ -1,16 +1,19 @@
-import { INTEGER, STRING, HasOneCreateAssociationMixin } from 'sequelize';
+import { INTEGER, STRING, HasOneCreateAssociationMixin, HasOneGetAssociationMixin } from 'sequelize';
 import type { Model } from 'sequelize';
 import { sequelize } from '../util/database';
 import { ICartInstance } from './cart';
+import { IOrderInstance } from './order';
 
-interface IUser {
+export interface IUser {
   id: number;
   name: string;
   email: string;
-  createCart?: HasOneCreateAssociationMixin<ICartInstance>
+  createCart?: HasOneCreateAssociationMixin<ICartInstance>;
+  createOrder?: HasOneCreateAssociationMixin<IOrderInstance>;
+  getCart?: HasOneGetAssociationMixin<ICartInstance>;
 }
 
-interface IUserInstance extends Model<IUser>, IUser {}
+export interface IUserInstance extends Model<IUser>, IUser {}
 
 export const User = sequelize.define<IUserInstance>('user', {
   id: {

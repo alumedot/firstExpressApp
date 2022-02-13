@@ -1,5 +1,7 @@
-import { INTEGER, STRING, DOUBLE, Model } from 'sequelize';
+import { INTEGER, STRING, DOUBLE, Model, HasManyHasAssociationMixin } from 'sequelize';
 import { sequelize } from '../util/database';
+import type { ICartItemInstance } from './cartItem';
+import { IOrderItem } from './orderItem';
 
 export interface IProduct {
   title: string;
@@ -10,7 +12,10 @@ export interface IProduct {
   userId?: number;
 }
 
-interface IProductInstance extends Model<IProduct>, IProduct {}
+export interface IProductInstance extends Model<IProduct>, IProduct {
+  cartItem?: ICartItemInstance;
+  orderItem?: Omit<IOrderItem, 'id'>;
+}
 
 export const Product = sequelize.define<IProductInstance>('product', {
   id: {

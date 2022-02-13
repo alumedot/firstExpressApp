@@ -1,14 +1,14 @@
 import { INTEGER, Model } from 'sequelize';
 import { sequelize } from '../util/database';
 
-export interface ICartItem {
+export interface IOrderItem {
   id: number;
   quantity: number;
 }
 
-export interface ICartItemInstance extends Model<ICartItem>, ICartItem {}
+interface IOrderItemInstance extends Model<IOrderItem>, IOrderItem {}
 
-export const CartItem = sequelize.define<ICartItemInstance>('cartItem', {
+export const OrderItem = sequelize.define<IOrderItemInstance>('orderItem', {
   id: {
     type: INTEGER,
     autoIncrement: true,

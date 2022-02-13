@@ -1,8 +1,11 @@
-import { INTEGER, Model } from 'sequelize';
+import { INTEGER, Model, HasManyGetAssociationsMixin, HasManyAddAssociationMixin } from 'sequelize';
 import { sequelize } from '../util/database';
+import type { IProductInstance } from './product';
 
 export interface ICart {
   id: number;
+  getProducts?: HasManyGetAssociationsMixin<IProductInstance>;
+  addProduct?: any; // TODO find a correct type
 }
 
 export interface ICartInstance extends Model<ICart>, ICart {}
