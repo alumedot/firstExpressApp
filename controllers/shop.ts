@@ -40,22 +40,22 @@ export const getIndex = (req, res) => {
 };
 
 export const getCart = (req, res, next) => {
-  Cart.getCart(cart => {
-    // Product.fetchAll(products => {
-    //   const cartProducts = [];
-    //   for (const product of products) {
-    //     const cartProductDate = cart.products.find(prod => prod.id === product.id);
-    //     if (cartProductDate) {
-    //       cartProducts.push({ productData: product, qty: cartProductDate.qty });
-    //     }
-    //   }
-    //   res.render('shop/cart', {
-    //     pageTitle: 'Your Cart',
-    //     path: '/cart',
-    //     products: cartProducts,
-    //   });
-    // })
-  });
+  // Cart.getCart(cart => {
+  //   // Product.fetchAll(products => {
+  //   //   const cartProducts = [];
+  //   //   for (const product of products) {
+  //   //     const cartProductDate = cart.products.find(prod => prod.id === product.id);
+  //   //     if (cartProductDate) {
+  //   //       cartProducts.push({ productData: product, qty: cartProductDate.qty });
+  //   //     }
+  //   //   }
+  //   //   res.render('shop/cart', {
+  //   //     pageTitle: 'Your Cart',
+  //   //     path: '/cart',
+  //   //     products: cartProducts,
+  //   //   });
+  //   // })
+  // });
 };
 
 export const postCart: ExpressCB = (req, res, next) => {

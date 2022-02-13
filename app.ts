@@ -8,6 +8,8 @@ import { get404 } from './controllers/error';
 import { sequelize } from './util/database';
 import { Product } from './models/product';
 import { User } from './models/user';
+import { Cart } from './models/cart';
+import { CartItem } from './models/cartItem';
 
 // console.log('sequel', sequel);
 
@@ -44,8 +46,15 @@ app.use(get404);
 
 Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 User.hasMany(Product);
+User.hasOne(Cart);
+// It's optional, one direction is enough
+Cart.belongsTo(User);
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
 
-sequelize.sync()
+sequelize
+  // .sync()
+  .sync({ force: true })
   .then(() => {
     return User.findByPk(1);
   })
