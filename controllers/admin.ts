@@ -11,11 +11,11 @@ export const getAddProduct = (req, res, next) => {
 
 export const postAddProduct: ExpressCB = (req, res, next) => {
   const { title, imageUrl, price, description } = req.body;
-  Product.create({
+  (req as any).user.createProduct({
     title,
     price,
     imageUrl,
-    description
+    description,
   })
     .then(() => {
       console.log('Created Product');
@@ -32,8 +32,10 @@ export const getEditProduct: ExpressCB = (req, res ) => {
 
   const { productId } = req.params;
 
-  Product.findByPk(productId)
-    .then((product) => {
+  (req as any).user
+    .getProducts({ where: { id: productId } })
+    .then((products) => {
+      const product = products[0];
       if (!product) {
         res.redirect('/');
       }
@@ -65,7 +67,9 @@ export const postEditProduct: ExpressCB = (req, res ) => {
 }
 
 export const getProducts: ExpressCB = (req, res, next) => {
-  Product.findAll()
+  (req as any).user
+    .getProducts()
+  // Product.findAll()
     .then((products) => {
       res.render('admin/products', {
         products,
