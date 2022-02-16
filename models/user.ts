@@ -1,4 +1,9 @@
-import { INTEGER, STRING, HasOneCreateAssociationMixin, HasOneGetAssociationMixin } from 'sequelize';
+import { INTEGER, STRING } from 'sequelize';
+import type {
+  HasOneCreateAssociationMixin,
+  HasOneGetAssociationMixin,
+  HasManyGetAssociationsMixin
+} from 'sequelize';
 import type { Model } from 'sequelize';
 import { sequelize } from '../util/database';
 import { ICartInstance } from './cart';
@@ -11,6 +16,7 @@ export interface IUser {
   createCart?: HasOneCreateAssociationMixin<ICartInstance>;
   createOrder?: HasOneCreateAssociationMixin<IOrderInstance>;
   getCart?: HasOneGetAssociationMixin<ICartInstance>;
+  getOrders?: HasManyGetAssociationsMixin<IOrderInstance>;
 }
 
 export interface IUserInstance extends Model<IUser>, IUser {}

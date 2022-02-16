@@ -100,23 +100,22 @@ export const postOrder: ExpressCB = async (req, res) => {
       product.orderItem = { quantity: product.cartItem.quantity };
       return product;
     }));
+    await cart.setProducts(null);
     res.redirect('/orders');
-    // console.log('products');
   } catch (e) {
     console.log(e);
   }
 }
 
-export const getOrders: ExpressCB = (req, res) => {
-  res.render('shop/orders', {
-    pageTitle: 'Your Orders',
-    path: '/orders',
-  });
-};
-
-export const getCheckout: ExpressCB = (req, res) => {
-  res.render('shop/checkout', {
-    pageTitle: 'Checkout',
-    path: '/checkout',
-  });
+export const getOrders: ExpressCB = async (req, res) => {
+  try {
+    const orders = await req.user.getOrders({ include: ['products'] });
+    res.render('shop/orders', {
+      pageTitle: 'Your Orders',
+      path: '/orders',
+      orders,
+    });
+  } catch (e) {
+    console.log(e);
+  }
 };
