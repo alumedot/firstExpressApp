@@ -3,7 +3,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 
 import { router as adminRoutes } from './routes/admin';
-// import { router as shopRoutes } from './routes/shop';
+import { router as shopRoutes } from './routes/shop';
 import { get404 } from './controllers/error';
 import { User } from './models/user';
 import { getMongoClient } from './util/database';
@@ -28,16 +28,16 @@ app.use((req, res, next) => {
   //     next();
   //   })
   //   .catch((error) => console.log(error))
+  next();
 })
 
 app.use('/admin', adminRoutes);
-// app.use(shopRoutes);
+app.use(shopRoutes);
 
 app.use(get404);
 
 (async () => {
-  const client = await getMongoClient();
-  console.log('client', client);
+  await getMongoClient();
   app.listen(3030);
 })()
 

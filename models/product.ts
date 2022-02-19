@@ -1,7 +1,7 @@
-import { INTEGER, STRING, DOUBLE, Model, HasManyHasAssociationMixin } from 'sequelize';
+import { Model } from 'sequelize';
 import type { ICartItemInstance } from './cartItem';
 import { IOrderItem } from './orderItem';
-// import { getMongoClient } from '../util/database';
+import { getDb } from '../util/database';
 
 export interface IProduct {
   title: string;
@@ -25,8 +25,22 @@ export class Product {
     this.imageUrl = imageUrl;
   }
 
-  save() {
+  async save() {
+    const db = getDb();
+    try {
+      return await db.collection('products').insertOne(this);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
+  static async fetchAll() {
+    const db = getDb();
+    try {
+      return await db.collection('products').find().toArray();
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
 
@@ -34,25 +48,3 @@ export interface IProductInstance extends Model<IProduct>, IProduct {
   cartItem?: ICartItemInstance;
   orderItem?: Omit<IOrderItem, 'id'>;
 }
-
-// export const Product = sequelize.define<IProductInstance>('product', {
-//   id: {
-//     type: INTEGER,
-//     autoIncrement: true,
-//     allowNull: false,
-//     primaryKey: true
-//   },
-//   title: STRING,
-//   price: {
-//     type: DOUBLE,
-//     allowNull: false
-//   },
-//   imageUrl: {
-//     type: STRING,
-//     allowNull: false
-//   },
-//   description: {
-//     type: STRING,
-//     allowNull: false
-//   }
-// });

@@ -2,7 +2,7 @@ import { Product } from '../models/product';
 import type { ExpressCB } from './types';
 
 export const getProducts: ExpressCB = async (req, res) => {
-  Product.findAll()
+  Product.fetchAll()
     .then((products) => {
       res.render('shop/product-list', {
         products: products || [],
@@ -15,19 +15,19 @@ export const getProducts: ExpressCB = async (req, res) => {
 
 export const getProduct: ExpressCB = (req, res ) => {
   const prodId = req.params.productId;
-  Product.findByPk(prodId)
-    .then((product) => {
-      res.render('shop/product-detail', {
-        product,
-        pageTitle: product.title,
-        path: '/products',
-      })
-    })
-    .catch((error) => console.log(error));
+  // Product.findByPk(prodId)
+  //   .then((product) => {
+  //     res.render('shop/product-detail', {
+  //       product,
+  //       pageTitle: product.title,
+  //       path: '/products',
+  //     })
+  //   })
+  //   .catch((error) => console.log(error));
 };
 
 export const getIndex: ExpressCB = (req, res) => {
-  Product.findAll()
+  Product.fetchAll()
     .then((products) => {
       res.render('shop/index', {
         products,
@@ -55,25 +55,25 @@ export const getCart: ExpressCB = (req, res) => {
 };
 
 export const postCart: ExpressCB = async (req, res, next) => {
-  const { productId } = req.body;
-
-  const cart = await req.user.getCart();
-  const cartProducts = await cart.getProducts({ where: { id: productId } });
-  const product = await Product.findByPk(productId);
-  const currentProduct = cartProducts[0];
-  let newQuantity = 1;
-
-
-  if (currentProduct) {
-    const oldQuantity = currentProduct.cartItem.quantity;
-    newQuantity = oldQuantity + 1;
-  }
-
-  await cart.addProduct(currentProduct || product, {
-    through: {
-      quantity: newQuantity,
-    }
-  });
+  // const { productId } = req.body;
+  //
+  // const cart = await req.user.getCart();
+  // const cartProducts = await cart.getProducts({ where: { id: productId } });
+  // const product = await Product.findByPk(productId);
+  // const currentProduct = cartProducts[0];
+  // let newQuantity = 1;
+  //
+  //
+  // if (currentProduct) {
+  //   const oldQuantity = currentProduct.cartItem.quantity;
+  //   newQuantity = oldQuantity + 1;
+  // }
+  //
+  // await cart.addProduct(currentProduct || product, {
+  //   through: {
+  //     quantity: newQuantity,
+  //   }
+  // });
 
   res.redirect('/cart');
 };
