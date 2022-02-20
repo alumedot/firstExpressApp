@@ -15,15 +15,15 @@ export const getProducts: ExpressCB = async (req, res) => {
 
 export const getProduct: ExpressCB = (req, res ) => {
   const prodId = req.params.productId;
-  // Product.findByPk(prodId)
-  //   .then((product) => {
-  //     res.render('shop/product-detail', {
-  //       product,
-  //       pageTitle: product.title,
-  //       path: '/products',
-  //     })
-  //   })
-  //   .catch((error) => console.log(error));
+  Product.findById(prodId)
+    .then((product) => {
+      res.render('shop/product-detail', {
+        product,
+        pageTitle: product.title,
+        path: '/products',
+      })
+    })
+    .catch((error) => console.log(error));
 };
 
 export const getIndex: ExpressCB = (req, res) => {

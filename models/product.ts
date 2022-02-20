@@ -1,3 +1,5 @@
+// @ts-ignore for some reason TS complains that it's not exported
+import { ObjectId } from 'mongodb';
 import { Model } from 'sequelize';
 import type { ICartItemInstance } from './cartItem';
 import { IOrderItem } from './orderItem';
@@ -17,20 +19,35 @@ export class Product {
   private price: number;
   private description: string;
   private imageUrl: string;
+  private _id: string;
 
-  constructor(title, price, description, imageUrl) {
+  constructor(title, price, description, imageUrl, id?) {
     this.title = title;
     this.price = price;
     this.description = description;
     this.imageUrl = imageUrl;
+    this._id = id;
   }
 
   async save() {
     const db = getDb();
-    try {
-      return await db.collection('products').insertOne(this);
-    } catch (e) {
-      console.log(e);
+
+    if (this._id) {
+      try {
+        return await db.collection('products')
+          .updateOne(
+            { _id: new ObjectId(this._id) },
+            { $set: this }
+          );
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      try {
+        return await db.collection('products').insertOne(this);
+      } catch (e) {
+        console.log(e);
+      }
     }
   }
 
@@ -38,6 +55,15 @@ export class Product {
     const db = getDb();
     try {
       return await db.collection('products').find().toArray();
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  static async findById(prodId: string) {
+    const db = getDb();
+    try {
+      return await db.collection('products').find({_id: new ObjectId(prodId)}).next();
     } catch (e) {
       console.log(e);
     }

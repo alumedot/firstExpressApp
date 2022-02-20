@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-ignore for some reason TS complains that it's not exported
 import { MongoClient, Db } from 'mongodb';
 
 let _db: Db;
