@@ -1,5 +1,3 @@
-// @ts-ignore for some reason TS complains that it's not exported
-import { ObjectId } from 'mongodb';
 import type { ExpressCB } from './types';
 import { Product } from '../models/product'
 
@@ -13,17 +11,10 @@ export const getAddProduct = (req, res, next) => {
 
 export const postAddProduct: ExpressCB = (req, res, next) => {
   const { title, imageUrl, price, description } = req.body;
-  const product = new Product(title, price, description, imageUrl);
+  const product = new Product(title, price, description, imageUrl, null, req.user._id);
 
-  // (req as any).use r.createProduct({
-  //   title,
-  //   price,
-  //   imageUrl,
-  //   description,
-  // })
   product.save()
-    .then((result) => {
-      console.log('result', result);
+    .then(() => {
       console.log('Created Product');
       res.redirect('/admin/products');
     })
@@ -56,7 +47,7 @@ export const getEditProduct: ExpressCB = (req, res ) => {
 export const postEditProduct: ExpressCB = (req, res ) => {
   const { productId, title, imageUrl, description, price } = req.body;
 
-  const updatedProduct = new Product(title, price, description, imageUrl, new ObjectId(productId));
+  const updatedProduct = new Product(title, price, description, imageUrl, productId);
 
   updatedProduct.save()
     .then(() => {
@@ -79,14 +70,11 @@ export const getProducts: ExpressCB = (req, res, next) => {
 };
 
 export const postDeleteProduct: ExpressCB = (req, res, next) => {
-  // const { productId } = req.body;
-  // Product.findByPk(productId)
-  //   .then((product) => {
-  //     return product.destroy()
-  //   })
-  //   .then(() => {
-  //     console.log(`DESTROYED PRODUCT WITH ID - ${productId}`);
-  //     res.redirect('/admin/products');
-  //   })
-  //   .catch((error) => console.log(error))
+  const { productId } = req.body;
+  Product.deleteById(productId)
+    .then(() => {
+      console.log(`DELETED PRODUCT WITH ID - ${productId}`);
+      res.redirect('/admin/products');
+    })
+    .catch((error) => console.log(error))
 }

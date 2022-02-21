@@ -1,33 +1,36 @@
-import { INTEGER, STRING } from 'sequelize';
-import type {
-  HasOneCreateAssociationMixin,
-  HasOneGetAssociationMixin,
-  HasManyGetAssociationsMixin
-} from 'sequelize';
-import type { Model } from 'sequelize';
-import { sequelize } from '../util/database';
-import { ICartInstance } from './cart';
-import { IOrderInstance } from './order';
+// @ts-ignore for some reason TS complains that it's not exported
+import { ObjectId } from 'mongodb';
+import { getDb } from '../util/database';
 
 export interface IUser {
-  id: number;
-  name: string;
-  email: string;
-  createCart?: HasOneCreateAssociationMixin<ICartInstance>;
-  createOrder?: HasOneCreateAssociationMixin<IOrderInstance>;
-  getCart?: HasOneGetAssociationMixin<ICartInstance>;
-  getOrders?: HasManyGetAssociationsMixin<IOrderInstance>;
+  _id: string;
+  getOrders?: any;
+  createOrder?: any;
+  getCart?: any;
 }
 
-export interface IUserInstance extends Model<IUser>, IUser {}
+export class User {
+  private name: string;
+  private email: string;
 
-export const User = sequelize.define<IUserInstance>('user', {
-  id: {
-    type: INTEGER,
-    autoIncrement: true,
-    allowNull: false,
-    primaryKey: true
-  },
-  name: STRING,
-  email: STRING
-});
+  constructor(username, email) {
+    this.name = username;
+    this.email = email;
+  }
+
+  save() {
+    const db = getDb();
+    try {
+      db.collection('users').insertOne(this);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  static findById(userId: string) {
+    const db = getDb();
+    return db
+      .collection('users')
+      .findOne({ _id: new ObjectId(userId)});
+  }
+}

@@ -20,13 +20,15 @@ export class Product {
   private description: string;
   private imageUrl: string;
   private _id: string;
+  private userId: string;
 
-  constructor(title, price, description, imageUrl, id?) {
+  constructor(title, price, description, imageUrl, id?, userId?) {
     this.title = title;
     this.price = price;
     this.description = description;
     this.imageUrl = imageUrl;
-    this._id = id;
+    this._id = id ? new ObjectId(id) : null;
+    this.userId = userId;
   }
 
   async save() {
@@ -36,7 +38,7 @@ export class Product {
       try {
         return await db.collection('products')
           .updateOne(
-            { _id: new ObjectId(this._id) },
+            { _id: this._id },
             { $set: this }
           );
       } catch (e) {
@@ -44,6 +46,7 @@ export class Product {
       }
     } else {
       try {
+        console.log('create product');
         return await db.collection('products').insertOne(this);
       } catch (e) {
         console.log(e);
@@ -64,6 +67,15 @@ export class Product {
     const db = getDb();
     try {
       return await db.collection('products').find({_id: new ObjectId(prodId)}).next();
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  static async deleteById(prodId: string) {
+    const db = getDb();
+    try {
+      return await db.collection('products').deleteOne({ _id: new ObjectId(prodId) });
     } catch (e) {
       console.log(e);
     }
