@@ -7,15 +7,20 @@ export interface IUser {
   getOrders?: any;
   createOrder?: any;
   getCart?: any;
+  addToCart?: any;
 }
 
 export class User {
   private name: string;
   private email: string;
+  private cart: any;
+  private _id: string;
 
-  constructor(username, email) {
+  constructor(username, email, cart, id) {
     this.name = username;
     this.email = email;
+    this.cart = cart;
+    this._id = id;
   }
 
   save() {
@@ -25,6 +30,22 @@ export class User {
     } catch (e) {
       console.log(e);
     }
+  }
+
+  async addToCart(product) {
+    // const cartProduct = this.cart.items.findIndex((item) => item._id === product._id);
+    const updatedCart = {
+      items: [{ productId: new ObjectId(product._id), quantity: 1 }]
+    };
+
+    const db = getDb();
+
+    return await db
+      .collection('users')
+      .updateOne(
+      { _id: new ObjectId(this._id) },
+      { $set: { cart: updatedCart } }
+    );
   }
 
   static findById(userId: string) {

@@ -55,10 +55,13 @@ export const getCart: ExpressCB = (req, res) => {
 };
 
 export const postCart: ExpressCB = async (req, res, next) => {
-  // const { productId } = req.body;
-  //
+  const { productId } = req.body;
+
+  const product = await Product.findById(productId);
+  req.user.addToCart(product).then(res => console.log('res', res));
+
   // const cart = await req.user.getCart();
-  // const cartProducts = await cart.getProducts({ where: { id: productId } });
+  // const cartProducts  = await cart.getProducts({ where: { id: productId } });
   // const product = await Product.findByPk(productId);
   // const currentProduct = cartProducts[0];
   // let newQuantity = 1;
