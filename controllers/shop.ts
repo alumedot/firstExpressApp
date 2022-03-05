@@ -46,19 +46,6 @@ export const getCart: ExpressCB = async (req, res) => {
     path: '/cart',
     products,
   });
-
-    // .then((cart) => {
-    //   cart.getProducts()
-    //     .then((products) => {
-    //       res.render('shop/cart', {
-    //         pageTitle: 'Your Cart',
-    //         path: '/cart',
-    //         products,
-    //       });
-    //     })
-    //     .catch((error) => console.log(error))
-    // })
-    // .catch((error) => console.log(error));
 };
 
 export const postCart: ExpressCB = async (req, res, next) => {
@@ -74,9 +61,7 @@ export const postCartDeleteProduct: ExpressCB = async (req, res) => {
   const { productId } = req.body;
 
   try {
-    const cart = await req.user.getCart();
-    const products = await cart.getProducts({ where: { id: productId } });
-    await products[0].cartItem.destroy();
+    await req.user.deleteItemFromCart(productId);
     res.redirect('/cart');
   } catch (e) {
     console.log(e);
