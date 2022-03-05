@@ -38,45 +38,34 @@ export const getIndex: ExpressCB = (req, res) => {
     .catch(error => console.log(error));
 };
 
-export const getCart: ExpressCB = (req, res) => {
-  req.user.getCart()
-    .then((cart) => {
-      cart.getProducts()
-        .then((products) => {
-          res.render('shop/cart', {
-            pageTitle: 'Your Cart',
-            path: '/cart',
-            products,
-          });
-        })
-        .catch((error) => console.log(error))
-    })
-    .catch((error) => console.log(error));
+export const getCart: ExpressCB = async (req, res) => {
+  const products = await req.user.getCart();
+
+  res.render('shop/cart', {
+    pageTitle: 'Your Cart',
+    path: '/cart',
+    products,
+  });
+
+    // .then((cart) => {
+    //   cart.getProducts()
+    //     .then((products) => {
+    //       res.render('shop/cart', {
+    //         pageTitle: 'Your Cart',
+    //         path: '/cart',
+    //         products,
+    //       });
+    //     })
+    //     .catch((error) => console.log(error))
+    // })
+    // .catch((error) => console.log(error));
 };
 
 export const postCart: ExpressCB = async (req, res, next) => {
   const { productId } = req.body;
 
   const product = await Product.findById(productId);
-  req.user.addToCart(product).then(res => console.log('res', res));
-
-  // const cart = await req.user.getCart();
-  // const cartProducts  = await cart.getProducts({ where: { id: productId } });
-  // const product = await Product.findByPk(productId);
-  // const currentProduct = cartProducts[0];
-  // let newQuantity = 1;
-  //
-  //
-  // if (currentProduct) {
-  //   const oldQuantity = currentProduct.cartItem.quantity;
-  //   newQuantity = oldQuantity + 1;
-  // }
-  //
-  // await cart.addProduct(currentProduct || product, {
-  //   through: {
-  //     quantity: newQuantity,
-  //   }
-  // });
+  await req.user.addToCart(product);
 
   res.redirect('/cart');
 };

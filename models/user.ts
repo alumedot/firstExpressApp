@@ -33,9 +33,22 @@ export class User {
   }
 
   async addToCart(product) {
-    // const cartProduct = this.cart.items.findIndex((item) => item._id === product._id);
+    const cartProductIndex = this.cart.items.findIndex(
+      (item) => item.productId.toString() === product._id.toString()
+    );
+    let newQuantity = 1;
+    const updatedCartItems = [...this.cart.items]
+
+    if (cartProductIndex >= 0) {
+      newQuantity = this.cart.items[cartProductIndex].quantity + 1;
+      updatedCartItems[cartProductIndex].quantity = newQuantity;
+    } else {
+      updatedCartItems.push({ productId: new ObjectId(product._id), quantity: newQuantity });
+    }
+
+
     const updatedCart = {
-      items: [{ productId: new ObjectId(product._id), quantity: 1 }]
+      items: updatedCartItems
     };
 
     const db = getDb();
@@ -46,6 +59,28 @@ export class User {
       { _id: new ObjectId(this._id) },
       { $set: { cart: updatedCart } }
     );
+  }
+
+  async getCart() {
+    const db = getDb();
+    const productIds = this.cart.items.map(({ productId }) => productId);
+    try {
+      const products = await db.collection('products')
+        .find({
+          _id: {
+            $in: productIds,
+          }
+        })
+        .toArray();
+      return products.map((product) => ({
+        ...product,
+        quantity: this.cart.items.find(
+          (item) => item.productId.toString() === product._id.toString()
+        ).quantity
+      }));
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   static findById(userId: string) {
