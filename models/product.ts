@@ -1,7 +1,5 @@
 // @ts-ignore for some reason TS complains that it's not exported
 import { ObjectId } from 'mongodb';
-import { Model } from 'sequelize';
-import { IOrderItem } from './orderItem';
 import { getDb } from '../util/database';
 
 export interface IProduct {
