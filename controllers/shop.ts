@@ -70,14 +70,7 @@ export const postCartDeleteProduct: ExpressCB = async (req, res) => {
 
 export const postOrder: ExpressCB = async (req, res) => {
   try {
-    const cart = await req.user.getCart();
-    const products = await cart.getProducts();
-    const order = await req.user.createOrder();
-    await order.addProducts(products.map((product) => {
-      product.orderItem = { quantity: product.cartItem.quantity };
-      return product;
-    }));
-    await cart.setProducts(null);
+    await req.user.addOrder();
     res.redirect('/orders');
   } catch (e) {
     console.log(e);
@@ -86,7 +79,7 @@ export const postOrder: ExpressCB = async (req, res) => {
 
 export const getOrders: ExpressCB = async (req, res) => {
   try {
-    const orders = await req.user.getOrders({ include: ['products'] });
+    const orders = await req.user.getOrders();
     res.render('shop/orders', {
       pageTitle: 'Your Orders',
       path: '/orders',

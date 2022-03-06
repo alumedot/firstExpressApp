@@ -9,6 +9,7 @@ export interface IUser {
   getCart?: any;
   addToCart?: any;
   deleteItemFromCart?: (string) => Promise<void>;
+  addOrder?: () => Promise<void>;
 }
 
 export class User {
@@ -97,6 +98,34 @@ export class User {
         { _id: new ObjectId(this._id) },
         { $set: { cart: { items: updatedCartItems } } }
       );
+  }
+
+  async addOrder() {
+    const db = getDb();
+    const items = await this.getCart();
+    const order = {
+      items,
+      user: {
+        _id: new ObjectId(this._id),
+        name: this.name
+      }
+    }
+    await db.collection('orders').insertOne(order);
+
+    const emptyCart = { items: [] };
+    this.cart = emptyCart;
+
+    return await db
+      .collection('users')
+      .updateOne(
+        { _id: new ObjectId(this._id) },
+        { $set: { cart: emptyCart } }
+      );
+  }
+
+  async getOrders() {
+    const db = getDb();
+    return db.collection('orders').find({ 'user._id': new ObjectId(this._id) }).toArray();
   }
 
   static findById(userId: string) {
