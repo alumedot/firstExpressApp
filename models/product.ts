@@ -1,6 +1,26 @@
 // @ts-ignore for some reason TS complains that it's not exported
 import { ObjectId } from 'mongodb';
+import mongoose, { Schema } from 'mongoose';
 import { getDb } from '../util/database';
+
+const productsSchema = new Schema({
+  title: {
+    type: String,
+    required: true
+  },
+  price: {
+    type: Number,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  imageUrl: {
+    type: String,
+    required: true
+  }
+});
 
 export interface IProduct {
   title: string;

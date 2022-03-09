@@ -1,6 +1,7 @@
 import path from 'path'
 import express from 'express';
 import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
 
 import { router as adminRoutes } from './routes/admin';
 import { router as shopRoutes } from './routes/shop';
@@ -35,9 +36,16 @@ app.use(shopRoutes);
 
 app.use(get404);
 
-(async () => {
-  await getMongoClient();
-  app.listen(3030);
-})()
+// (async () => {
+//   await getMongoClient();
+//   app.listen(3030);
+// })()
+
+mongoose
+  .connect('mongodb+srv://alumedot:VXrg9xp82OVDerum@cluster0.2fqy4.mongodb.net/shop?retryWrites=true&w=majority')
+  .then(() => {
+    app.listen(3030);
+  })
+  .catch((error) => console.log(error));
 
 module.exports = app;
