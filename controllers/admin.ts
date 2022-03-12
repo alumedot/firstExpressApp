@@ -45,37 +45,44 @@ export const getEditProduct: ExpressCB = (req, res ) => {
     .catch((error) => console.log(error))
 };
 
-// export const postEditProduct: ExpressCB = (req, res ) => {
-//   const { productId, title, imageUrl, description, price } = req.body;
-//
-//   const updatedProduct = new Product(title, price, description, imageUrl, productId);
-//
-//   updatedProduct.save()
-//     .then(() => {
-//       console.log('UPDATED PRODUCT');
-//       res.redirect('/admin/products');
-//     })
-//     .catch((error) => console.log(error))
-// }
-//
-// export const getProducts: ExpressCB = (req, res, next) => {
-//   Product.fetchAll()
-//     .then((products) => {
-//       res.render('admin/products', {
-//         products,
-//         pageTitle: 'Admin Products',
-//         path: '/admin/products',
-//       });
-//     })
-//     .catch((error) => console.log(error));
-// };
-//
-// export const postDeleteProduct: ExpressCB = (req, res, next) => {
-//   const { productId } = req.body;
-//   Product.deleteById(productId)
-//     .then(() => {
-//       console.log(`DELETED PRODUCT WITH ID - ${productId}`);
-//       res.redirect('/admin/products');
-//     })
-//     .catch((error) => console.log(error))
-// }
+export const postEditProduct: ExpressCB = async (req, res ) => {
+  const { productId, title, imageUrl, description, price } = req.body;
+
+  // const updatedProduct = new Product(title, price, description, imageUrl, productId);
+
+  const productToUpdate = await Product.findById(productId);
+
+  productToUpdate.title = title;
+  productToUpdate.price = price;
+  productToUpdate.imageUrl = imageUrl;
+  productToUpdate.description = description;
+
+  productToUpdate.save()
+    .then(() => {
+      console.log('UPDATED PRODUCT');
+      res.redirect('/admin/products');
+    })
+    .catch((error) => console.log(error))
+}
+
+export const getProducts: ExpressCB = (req, res, next) => {
+  Product.find()
+    .then((products) => {
+      res.render('admin/products', {
+        products,
+        pageTitle: 'Admin Products',
+        path: '/admin/products',
+      });
+    })
+    .catch((error) => console.log(error));
+};
+
+export const postDeleteProduct: ExpressCB = (req, res, next) => {
+  const { productId } = req.body;
+  Product.findByIdAndDelete(productId)
+    .then(() => {
+      console.log(`DELETED PRODUCT WITH ID - ${productId}`);
+      res.redirect('/admin/products');
+    })
+    .catch((error) => console.log(error))
+}
