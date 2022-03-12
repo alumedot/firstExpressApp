@@ -2,7 +2,7 @@ import { Product } from '../models/product';
 import type { ExpressCB } from './types';
 
 export const getProducts: ExpressCB = async (req, res) => {
-  Product.fetchAll()
+  Product.find()
     .then((products) => {
       res.render('shop/product-list', {
         products: products || [],
@@ -27,7 +27,7 @@ export const getProduct: ExpressCB = (req, res ) => {
 };
 
 export const getIndex: ExpressCB = (req, res) => {
-  Product.fetchAll()
+  Product.find()
     .then((products) => {
       res.render('shop/index', {
         products,
