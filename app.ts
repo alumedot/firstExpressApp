@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 import { router as adminRoutes } from './routes/admin';
 import { router as shopRoutes } from './routes/shop';
 import { get404 } from './controllers/error';
-import { User } from './models/user';
+// import { User } from './models/user';
 import { getMongoClient } from './util/database';
 
 const app = express();
@@ -22,14 +22,14 @@ app.set('views', 'views');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use((req, res, next) => {
-  User.findById('62140111e33d3d01d21229b5')
-    .then((user) => {
-      (req as any).user = new User(user.name, user.email, user.cart, user._id);
-      next();
-    })
-    .catch((error) => console.log(error))
-})
+// app.use((req, res, next) => {
+//   User.findById('62140111e33d3d01d21229b5')
+//     .then((user) => {
+//       (req as any).user = new User(user.name, user.email, user.cart, user._id);
+//       next();
+//     })
+//     .catch((error) => console.log(error))
+// })
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
@@ -42,7 +42,7 @@ app.use(get404);
 // })()
 
 mongoose
-  .connect('mongodb+srv://alumedot:VXrg9xp82OVDerum@cluster0.2fqy4.mongodb.net/shop?retryWrites=true&w=majority')
+  .connect('mongodb+srv://alumedot:VXrg9xp82OVDerum@cluster0.2fqy4.mongodb.net/shop?retryWrites=true')
   .then(() => {
     app.listen(3030);
   })
