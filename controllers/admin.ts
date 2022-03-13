@@ -72,7 +72,8 @@ export const postEditProduct: ExpressCB = async (req, res ) => {
 }
 
 export const getProducts: ExpressCB = (req, res, next) => {
-  Product.find()
+  Product
+    .find()
     .then((products) => {
       res.render('admin/products', {
         products,
