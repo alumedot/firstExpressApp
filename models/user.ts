@@ -59,11 +59,17 @@ userSchema.methods.removeFromCart = function (productId: string) {
   return this.save();
 }
 
+userSchema.methods.clearCart = async function () {
+  this.cart = { items: [] };
+  return this.save();
+}
+
 export const User = model('User', userSchema);
 
 export interface IUser {
   _id: string;
   name: string;
+  cart?: any;
   getOrders?: any;
   createOrder?: any;
   getCart?: any;
@@ -71,7 +77,7 @@ export interface IUser {
   removeFromCart?: (string) => Promise<void>;
   addOrder?: () => Promise<void>;
   populate?: any;
-  cart?: any;
+  clearCart?: () => Promise<void>;
 }
 
 // export class User {
@@ -108,29 +114,6 @@ export interface IUser {
 //       { _id: new ObjectId(this._id) },
 //       { $set: { cart: updatedCart } }
 //     );
-//   }
-//
-//   async addOrder() {
-//     const db = getDb();
-//     const items = await this.getCart();
-//     const order = {
-//       items,
-//       user: {
-//         _id: new ObjectId(this._id),
-//         name: this.name
-//       }
-//     }
-//     await db.collection('orders').insertOne(order);
-//
-//     const emptyCart = { items: [] };
-//     this.cart = emptyCart;
-//
-//     return await db
-//       .collection('users')
-//       .updateOne(
-//         { _id: new ObjectId(this._id) },
-//         { $set: { cart: emptyCart } }
-//       );
 //   }
 //
 //   async getOrders() {

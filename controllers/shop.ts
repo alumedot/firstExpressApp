@@ -84,6 +84,7 @@ export const postOrder: ExpressCB = async (req, res) => {
       }))
     });
     await order.save();
+    await req.user.clearCart();
     res.redirect('/orders');
   } catch (e) {
     console.log(e);
