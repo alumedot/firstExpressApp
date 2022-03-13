@@ -50,6 +50,15 @@ userSchema.methods.addToCart = async function (product) {
   return await this.save();
 }
 
+userSchema.methods.removeFromCart = function (productId: string) {
+  const updatedCartItems = this.cart.items.filter(
+    ({ productId: id }) => productId.toString() !== id.toString()
+  );
+
+  this.cart.items = updatedCartItems;
+  return this.save();
+}
+
 export const User = model('User', userSchema);
 
 export interface IUser {
@@ -58,7 +67,7 @@ export interface IUser {
   createOrder?: any;
   getCart?: any;
   addToCart?: any;
-  deleteItemFromCart?: (string) => Promise<void>;
+  removeFromCart?: (string) => Promise<void>;
   addOrder?: () => Promise<void>;
   populate?: any;
   cart?: any;
@@ -98,21 +107,6 @@ export interface IUser {
 //       { _id: new ObjectId(this._id) },
 //       { $set: { cart: updatedCart } }
 //     );
-//   }
-//
-//   async deleteItemFromCart(productId) {
-//     const updatedCartItems = this.cart.items.filter(
-//       ({ productId: id }) => productId.toString() !== id.toString()
-//     );
-//
-//     const db = getDb();
-//
-//     return await db
-//       .collection('users')
-//       .updateOne(
-//         { _id: new ObjectId(this._id) },
-//         { $set: { cart: { items: updatedCartItems } } }
-//       );
 //   }
 //
 //   async addOrder() {

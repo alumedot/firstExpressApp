@@ -61,7 +61,7 @@ export const postCartDeleteProduct: ExpressCB = async (req, res) => {
   const { productId } = req.body;
 
   try {
-    await req.user.deleteItemFromCart(productId);
+    await req.user.removeFromCart(productId);
     res.redirect('/cart');
   } catch (e) {
     console.log(e);
