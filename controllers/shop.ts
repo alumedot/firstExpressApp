@@ -39,12 +39,12 @@ export const getIndex: ExpressCB = (req, res) => {
 };
 
 export const getCart: ExpressCB = async (req, res) => {
-  const products = await req.user.getCart();
+  await req.user.populate('cart.items.productId');
 
   res.render('shop/cart', {
     pageTitle: 'Your Cart',
     path: '/cart',
-    products,
+    products: req.user.cart.items,
   });
 };
 

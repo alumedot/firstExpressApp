@@ -60,6 +60,8 @@ export interface IUser {
   addToCart?: any;
   deleteItemFromCart?: (string) => Promise<void>;
   addOrder?: () => Promise<void>;
+  populate?: any;
+  cart?: any;
 }
 
 // export class User {
@@ -84,21 +86,6 @@ export interface IUser {
 //     }
 //   }
 //
-//   async addToCart(product) {
-//     const cartProductIndex = this.cart.items.findIndex(
-//       (item) => item.productId.toString() === product._id.toString()
-//     );
-//     let newQuantity = 1;
-//     const updatedCartItems = [...this.cart.items]
-//
-//     if (cartProductIndex >= 0) {
-//       newQuantity = this.cart.items[cartProductIndex].quantity + 1;
-//       updatedCartItems[cartProductIndex].quantity = newQuantity;
-//     } else {
-//       updatedCartItems.push({ productId: new ObjectId(product._id), quantity: newQuantity });
-//     }
-//
-//
 //     const updatedCart = {
 //       items: updatedCartItems
 //     };
@@ -111,28 +98,6 @@ export interface IUser {
 //       { _id: new ObjectId(this._id) },
 //       { $set: { cart: updatedCart } }
 //     );
-//   }
-//
-//   async getCart() {
-//     const db = getDb();
-//     const productIds = this.cart.items.map(({ productId }) => productId);
-//     try {
-//       const products = await db.collection('products')
-//         .find({
-//           _id: {
-//             $in: productIds,
-//           }
-//         })
-//         .toArray();
-//       return products.map((product) => ({
-//         ...product,
-//         quantity: this.cart.items.find(
-//           (item) => item.productId.toString() === product._id.toString()
-//         ).quantity
-//       }));
-//     } catch (e) {
-//       console.log(e);
-//     }
 //   }
 //
 //   async deleteItemFromCart(productId) {
