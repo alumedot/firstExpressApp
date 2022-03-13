@@ -1,4 +1,5 @@
 import { Product } from '../models/product';
+import { Order } from '../models/order';
 import type { ExpressCB } from './types';
 
 export const getProducts: ExpressCB = async (req, res) => {
@@ -69,8 +70,20 @@ export const postCartDeleteProduct: ExpressCB = async (req, res) => {
 }
 
 export const postOrder: ExpressCB = async (req, res) => {
+  await req.user.populate('cart.items.productId');
+
   try {
-    await req.user.addOrder();
+    const order = new Order({
+      user: {
+        name: req.user.name,
+        userId: req.user
+      },
+      products: req.user.cart.items.map((item) => ({
+        quantity: item.quantity,
+        product: { ...item.productId._doc }
+      }))
+    });
+    await order.save();
     res.redirect('/orders');
   } catch (e) {
     console.log(e);

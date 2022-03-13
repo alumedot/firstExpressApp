@@ -63,6 +63,7 @@ export const User = model('User', userSchema);
 
 export interface IUser {
   _id: string;
+  name: string;
   getOrders?: any;
   createOrder?: any;
   getCart?: any;
