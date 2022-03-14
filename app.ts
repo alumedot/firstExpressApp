@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 
 import { router as adminRoutes } from './routes/admin';
 import { router as shopRoutes } from './routes/shop';
+import { router as authRoutes } from './routes/auth';
 import { get404 } from './controllers/error';
 import { User } from './models/user';
 import { getMongoClient } from './util/database';
@@ -33,13 +34,9 @@ app.use((req, res, next) => {
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
+app.use(authRoutes);
 
 app.use(get404);
-
-// (async () => {
-//   await getMongoClient();
-//   app.listen(3030);
-// })()
 
 mongoose
   .connect('mongodb+srv://alumedot:VXrg9xp82OVDerum@cluster0.2fqy4.mongodb.net/shop?retryWrites=true')
