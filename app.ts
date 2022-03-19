@@ -2,13 +2,13 @@ import path from 'path'
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
+import session from 'express-session';
 
 import { router as adminRoutes } from './routes/admin';
 import { router as shopRoutes } from './routes/shop';
 import { router as authRoutes } from './routes/auth';
 import { get404 } from './controllers/error';
 import { User } from './models/user';
-import { getMongoClient } from './util/database';
 
 const app = express();
 
@@ -22,6 +22,7 @@ app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({ secret: 'my secret', resave: false, saveUninitialized: false }));
 
 app.use((req, res, next) => {
   User.findById('622cf70ff9500387cdc8b38b')

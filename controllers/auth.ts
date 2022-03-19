@@ -12,6 +12,7 @@ export const getLogin: ExpressCB = async (req, res) => {
 };
 
 export const postLogin: ExpressCB = async (req, res) => {
-  res.cookie('loggedIn', true, { maxAge: 100000 });
+  // @ts-ignore
+  req.session.isLoggedIn = true;
   res.redirect('/');
 };
