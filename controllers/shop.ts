@@ -40,12 +40,12 @@ export const getIndex: ExpressCB = (req, res) => {
 };
 
 export const getCart: ExpressCB = async (req, res) => {
-  await req.user.populate('cart.items.productId');
+  await (req.session as any).user.populate('cart.items.productId');
 
   res.render('shop/cart', {
     pageTitle: 'Your Cart',
     path: '/cart',
-    products: req.user.cart.items,
+    products: (req.session as any).user.cart.items,
   });
 };
 
@@ -53,7 +53,7 @@ export const postCart: ExpressCB = async (req, res, next) => {
   const { productId } = req.body;
 
   const product = await Product.findById(productId);
-  await req.user.addToCart(product);
+  await (req.session as any).user.addToCart(product);
 
   res.redirect('/cart');
 };
@@ -62,7 +62,7 @@ export const postCartDeleteProduct: ExpressCB = async (req, res) => {
   const { productId } = req.body;
 
   try {
-    await req.user.removeFromCart(productId);
+    await (req.session as any).user.removeFromCart(productId);
     res.redirect('/cart');
   } catch (e) {
     console.log(e);
@@ -70,21 +70,21 @@ export const postCartDeleteProduct: ExpressCB = async (req, res) => {
 }
 
 export const postOrder: ExpressCB = async (req, res) => {
-  await req.user.populate('cart.items.productId');
+  await (req.session as any).user.populate('cart.items.productId');
 
   try {
     const order = new Order({
       user: {
-        name: req.user.name,
-        userId: req.user
+        name: (req.session as any).user.name,
+        userId: (req.session as any).user
       },
-      products: req.user.cart.items.map((item) => ({
+      products: (req.session as any).user.cart.items.map((item) => ({
         quantity: item.quantity,
         product: { ...item.productId._doc }
       }))
     });
     await order.save();
-    await req.user.clearCart();
+    await (req.session as any).user.clearCart();
     res.redirect('/orders');
   } catch (e) {
     console.log(e);
@@ -93,7 +93,7 @@ export const postOrder: ExpressCB = async (req, res) => {
 
 export const getOrders: ExpressCB = async (req, res) => {
   try {
-    const orders = await Order.find({ 'user.userId': req.user._id })
+    const orders = await Order.find({ 'user.userId': (req.session as any).user._id })
 
     res.render('shop/orders', {
       pageTitle: 'Your Orders',

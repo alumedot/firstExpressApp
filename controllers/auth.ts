@@ -1,3 +1,4 @@
+import { User } from '../models/user';
 import type { ExpressCB } from './types';
 
 export const getLogin: ExpressCB = async (req, res) => {
@@ -12,7 +13,11 @@ export const getLogin: ExpressCB = async (req, res) => {
 };
 
 export const postLogin: ExpressCB = async (req, res) => {
-  // @ts-ignore
-  req.session.isLoggedIn = true;
-  res.redirect('/');
+  User.findById('622cf70ff9500387cdc8b38b')
+    .then((user) => {
+      (req.session as any).isLoggedIn = true;
+      (req.session as any).user = user;
+      res.redirect('/');
+    })
+    .catch((error) => console.log(error))
 };
