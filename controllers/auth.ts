@@ -6,6 +6,7 @@ export const getLogin: ExpressCB = async (req, res) => {
     res.render('auth/login', {
       pageTitle: 'Login',
       path: '/login',
+      isLoggedIn: false
     });
   } catch (e) {
     console.log(e);
@@ -20,4 +21,11 @@ export const postLogin: ExpressCB = async (req, res) => {
       res.redirect('/');
     })
     .catch((error) => console.log(error))
+};
+
+export const postLogout: ExpressCB = async (req, res) => {
+  req.session.destroy((err) => {
+    console.log('error', err);
+    res.redirect('/');
+  });
 };

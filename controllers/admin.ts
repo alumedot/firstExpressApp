@@ -1,11 +1,12 @@
 import type { ExpressCB } from './types';
 import { Product } from '../models/product'
 
-export const getAddProduct = (req, res, next) => {
+export const getAddProduct = (req, res) => {
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
     editing: false,
+    isLoggedIn: (req.session as any).isLoggedIn
   });
 };
 
@@ -46,6 +47,7 @@ export const getEditProduct: ExpressCB = (req, res ) => {
         pageTitle: 'Edit Product',
         path: '/admin/edit-product',
         editing: editMode,
+        isLoggedIn: (req.session as any).isLoggedIn
       });
     })
     .catch((error) => console.log(error))
@@ -79,6 +81,7 @@ export const getProducts: ExpressCB = (req, res, next) => {
         products,
         pageTitle: 'Admin Products',
         path: '/admin/products',
+        isLoggedIn: (req.session as any).isLoggedIn
       });
     })
     .catch((error) => console.log(error));

@@ -9,6 +9,7 @@ export const getProducts: ExpressCB = async (req, res) => {
         products: products || [],
         pageTitle: 'All products',
         path: '/products',
+        isLoggedIn: (req.session as any).isLoggedIn
       });
     })
     .catch(error => console.log(error));
@@ -22,6 +23,7 @@ export const getProduct: ExpressCB = (req, res ) => {
         product,
         pageTitle: product.title,
         path: '/products',
+        isLoggedIn: (req.session as any).isLoggedIn
       })
     })
     .catch((error) => console.log(error));
@@ -34,6 +36,7 @@ export const getIndex: ExpressCB = (req, res) => {
         products,
         pageTitle: 'Shop',
         path: '/',
+        isLoggedIn: (req.session as any).isLoggedIn
       });
     })
     .catch(error => console.log(error));
@@ -46,6 +49,7 @@ export const getCart: ExpressCB = async (req, res) => {
     pageTitle: 'Your Cart',
     path: '/cart',
     products: (req.session as any).user.cart.items,
+    isLoggedIn: (req.session as any).isLoggedIn
   });
 };
 
@@ -99,6 +103,7 @@ export const getOrders: ExpressCB = async (req, res) => {
       pageTitle: 'Your Orders',
       path: '/orders',
       orders,
+      isLoggedIn: (req.session as any).isLoggedIn
     });
   } catch (e) {
     console.log(e);
