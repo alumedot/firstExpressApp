@@ -13,6 +13,14 @@ export const getLogin: ExpressCB = async (req, res) => {
   }
 };
 
+export const getSignup: ExpressCB = async (req, res) => {
+  res.render('auth/signup', {
+    pageTitle: 'Signup',
+    path: '/signup',
+    isLoggedIn: false
+  });
+};
+
 export const postLogin: ExpressCB = async (req, res) => {
   User.findById('622cf70ff9500387cdc8b38b')
     .then((user) => {
@@ -25,6 +33,10 @@ export const postLogin: ExpressCB = async (req, res) => {
     })
     .catch((error) => console.log(error))
 };
+
+export const postSignup: ExpressCB = (req, res) => {
+
+}
 
 export const postLogout: ExpressCB = async (req, res) => {
   req.session.destroy((err) => {
