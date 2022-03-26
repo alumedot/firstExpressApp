@@ -17,7 +17,7 @@ export const postAddProduct: ExpressCB = (req, res, next) => {
     imageUrl,
     price,
     description,
-    userId: (req.session as any).user
+    userId: (req as any).user
   });
 
   product

@@ -18,7 +18,10 @@ export const postLogin: ExpressCB = async (req, res) => {
     .then((user) => {
       (req.session as any).isLoggedIn = true;
       (req.session as any).user = user;
-      res.redirect('/');
+      req.session.save((err) => {
+        err && console.log(err);
+        res.redirect('/');
+      });
     })
     .catch((error) => console.log(error))
 };
