@@ -2,13 +2,13 @@
 import { model, Schema } from 'mongoose';
 
 const userSchema = new Schema({
-  name: {
-    type: String,
-    requires: true
-  },
   email: {
     type: String,
-    requires: true
+    required: true
+  },
+  password: {
+    type: String,
+    required: true
   },
   cart: {
     items: [{
@@ -19,7 +19,7 @@ const userSchema = new Schema({
       },
       quantity: {
         type: Number,
-        requires: true
+        required: true
       }
     }]
   }

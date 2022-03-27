@@ -34,8 +34,23 @@ export const postLogin: ExpressCB = async (req, res) => {
     .catch((error) => console.log(error))
 };
 
-export const postSignup: ExpressCB = (req, res) => {
-
+export const postSignup: ExpressCB = async (
+  {
+    body: { email, password, confirmPassword }
+  },
+  res
+) => {
+  try {
+    const user = await User.findOne({ email });
+    if (user) {
+      return res.redirect('/signup');
+    }
+    const newUser = new User({ email, password, cart: { items: [] } });
+    await newUser.save();
+    res.redirect('/login');
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 export const postLogout: ExpressCB = async (req, res) => {
