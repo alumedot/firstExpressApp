@@ -1,4 +1,4 @@
-import { hash } from 'bcryptjs';
+import { hash, compare } from 'bcryptjs';
 import { User } from '../models/user';
 import type { ExpressCB } from './types';
 
@@ -22,17 +22,35 @@ export const getSignup: ExpressCB = async (req, res) => {
   });
 };
 
-export const postLogin: ExpressCB = async (req, res) => {
-  User.findById('622cf70ff9500387cdc8b38b')
-    .then((user) => {
-      (req.session as any).isLoggedIn = true;
-      (req.session as any).user = user;
-      req.session.save((err) => {
+export const postLogin: ExpressCB = async (
+  {
+    session,
+    body: { email, password }
+  },
+  res
+) => {
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.redirect('/login');
+    }
+
+    const isCorrectPassword = await compare(password, user.password);
+
+    if (isCorrectPassword) {
+      (session as any).isLoggedIn = true;
+      (session as any).user = user;
+      return session.save((err) => {
         err && console.log(err);
         res.redirect('/');
       });
-    })
-    .catch((error) => console.log(error))
+    }
+
+    res.redirect('/login');
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 export const postSignup: ExpressCB = async (
