@@ -1,3 +1,4 @@
+import { hash } from 'bcryptjs';
 import { User } from '../models/user';
 import type { ExpressCB } from './types';
 
@@ -45,7 +46,13 @@ export const postSignup: ExpressCB = async (
     if (user) {
       return res.redirect('/signup');
     }
-    const newUser = new User({ email, password, cart: { items: [] } });
+    const hashedPassword = await hash(password, 12);
+    console.log('hashedPassword', hashedPassword);
+    const newUser = new User({
+      email,
+      password: hashedPassword,
+      cart: { items: [] }
+    });
     await newUser.save();
     res.redirect('/login');
   } catch (e) {
