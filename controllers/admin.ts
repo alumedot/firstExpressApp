@@ -2,6 +2,10 @@ import type { ExpressCB } from './types';
 import { Product } from '../models/product'
 
 export const getAddProduct = (req, res) => {
+  if (!(req.session as any).isLoggedIn) {
+    return res.redirect('/login');
+  }
+
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
