@@ -7,7 +7,8 @@ export const getLogin: ExpressCB = async (req, res) => {
     res.render('auth/login', {
       pageTitle: 'Login',
       path: '/login',
-      isLoggedIn: false
+      isLoggedIn: false,
+      csrfToken: req.csrfToken()
     });
   } catch (e) {
     console.log(e);

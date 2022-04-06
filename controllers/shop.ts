@@ -8,8 +8,7 @@ export const getProducts: ExpressCB = async (req, res) => {
       res.render('shop/product-list', {
         products: products || [],
         pageTitle: 'All products',
-        path: '/products',
-        isLoggedIn: (req.session as any).isLoggedIn
+        path: '/products'
       });
     })
     .catch(error => console.log(error));
@@ -22,8 +21,7 @@ export const getProduct: ExpressCB = (req, res ) => {
       res.render('shop/product-detail', {
         product,
         pageTitle: product.title,
-        path: '/products',
-        isLoggedIn: (req.session as any).isLoggedIn
+        path: '/products'
       })
     })
     .catch((error) => console.log(error));
@@ -35,8 +33,7 @@ export const getIndex: ExpressCB = (req, res) => {
       res.render('shop/index', {
         products,
         pageTitle: 'Shop',
-        path: '/',
-        isLoggedIn: (req.session as any).isLoggedIn
+        path: '/'
       });
     })
     .catch(error => console.log(error));
@@ -48,8 +45,7 @@ export const getCart: ExpressCB = async (req, res) => {
   res.render('shop/cart', {
     pageTitle: 'Your Cart',
     path: '/cart',
-    products: (req as any).user.cart.items,
-    isLoggedIn: (req.session as any).isLoggedIn
+    products: (req as any).user.cart.items
   });
 };
 
@@ -79,7 +75,7 @@ export const postOrder: ExpressCB = async (req, res) => {
   try {
     const order = new Order({
       user: {
-        name: (req as any).user.name,
+        email: (req as any).user.email,
         userId: (req as any).user
       },
       products: (req as any).user.cart.items.map((item) => ({
@@ -102,8 +98,7 @@ export const getOrders: ExpressCB = async (req, res) => {
     res.render('shop/orders', {
       pageTitle: 'Your Orders',
       path: '/orders',
-      orders,
-      isLoggedIn: (req.session as any).isLoggedIn
+      orders
     });
   } catch (e) {
     console.log(e);

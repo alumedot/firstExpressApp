@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import session from 'express-session';
 import ConnectMongoSession from 'connect-mongodb-session';
+import csrf from 'csurf';
 
 import { router as adminRoutes } from './routes/admin';
 import { router as shopRoutes } from './routes/shop';
@@ -20,6 +21,8 @@ const store = new MongoDBStore({
   uri: MONGODB_URI,
   collection: 'sessions'
 });
+
+const csrfProtection = csrf();
 
 app.set('view engine', 'ejs');
 
@@ -38,6 +41,8 @@ app.use(session({
   store
 }));
 
+app.use(csrfProtection);
+
 app.use((req, res, next) => {
   if (!(req.session as any).user) {
     return next();
@@ -49,6 +54,12 @@ app.use((req, res, next) => {
       next();
     })
     .catch((error) => console.log(error))
+})
+
+app.use((req, res, next) => {
+  res.locals.isLoggedIn = (req.session as any).isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
 })
 
 app.use('/admin', adminRoutes);

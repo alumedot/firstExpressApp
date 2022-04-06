@@ -5,8 +5,7 @@ export const getAddProduct = (req, res) => {
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
-    editing: false,
-    isLoggedIn: (req.session as any).isLoggedIn
+    editing: false
   });
 };
 
@@ -46,8 +45,7 @@ export const getEditProduct: ExpressCB = (req, res ) => {
         product,
         pageTitle: 'Edit Product',
         path: '/admin/edit-product',
-        editing: editMode,
-        isLoggedIn: (req.session as any).isLoggedIn
+        editing: editMode
       });
     })
     .catch((error) => console.log(error))
@@ -80,8 +78,7 @@ export const getProducts: ExpressCB = (req, res, next) => {
       res.render('admin/products', {
         products,
         pageTitle: 'Admin Products',
-        path: '/admin/products',
-        isLoggedIn: (req.session as any).isLoggedIn
+        path: '/admin/products'
       });
     })
     .catch((error) => console.log(error));

@@ -3,8 +3,7 @@ export const get404 = (req, res) => {
     '404',
     {
       pageTitle: 'Page Not Found!',
-      path: '/404',
-      isLoggedIn: (req.session as any).isLoggedIn
+      path: '/404'
     }
   );
 };
