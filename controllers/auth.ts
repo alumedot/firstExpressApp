@@ -4,11 +4,19 @@ import type { ExpressCB } from './types';
 
 export const getLogin: ExpressCB = async (req, res) => {
   try {
+    let message: string | string[] = req.flash('error');
+    if (message.length) {
+      message = message[0];
+    } else {
+      message = null;
+    }
+
     res.render('auth/login', {
       pageTitle: 'Login',
       path: '/login',
       isLoggedIn: false,
-      csrfToken: req.csrfToken()
+      csrfToken: req.csrfToken(),
+      errorMessage: message
     });
   } catch (e) {
     console.log(e);
@@ -24,25 +32,23 @@ export const getSignup: ExpressCB = async (req, res) => {
 };
 
 export const postLogin: ExpressCB = async (
-  {
-    session,
-    body: { email, password }
-  },
+  req,
   res
 ) => {
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: req.body.email });
 
     if (!user) {
+      req.flash('error', 'Invalid email or password');
       return res.redirect('/login');
     }
 
-    const isCorrectPassword = await compare(password, user.password);
+    const isCorrectPassword = await compare(req.body.password, user.password);
 
     if (isCorrectPassword) {
-      (session as any).isLoggedIn = true;
-      (session as any).user = user;
-      return session.save((err) => {
+      (req.session as any).isLoggedIn = true;
+      (req.session as any).user = user;
+      return req.session.save((err) => {
         err && console.log(err);
         res.redirect('/');
       });
@@ -81,7 +87,6 @@ export const postSignup: ExpressCB = async (
 
 export const postLogout: ExpressCB = async (req, res) => {
   req.session.destroy((err) => {
-    console.log('error', err);
     res.redirect('/');
   });
 };

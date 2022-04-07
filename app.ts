@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import session from 'express-session';
 import ConnectMongoSession from 'connect-mongodb-session';
 import csrf from 'csurf';
+import flash from 'connect-flash';
 
 import { router as adminRoutes } from './routes/admin';
 import { router as shopRoutes } from './routes/shop';
@@ -42,6 +43,8 @@ app.use(session({
 }));
 
 app.use(csrfProtection);
+
+app.use(flash());
 
 app.use((req, res, next) => {
   if (!(req.session as any).user) {
