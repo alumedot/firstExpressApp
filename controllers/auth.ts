@@ -1,6 +1,14 @@
 import { hash, compare } from 'bcryptjs';
+import nodemailer from 'nodemailer';
+import sendgridTransport from 'nodemailer-sendgrid-transport';
 import { User } from '../models/user';
 import type { ExpressCB } from './types';
+
+const transporter = nodemailer.createTransport(sendgridTransport({
+  auth: {
+    api_key: 'test', // here should be a real api key
+  }
+}));
 
 export const getLogin: ExpressCB = async (req, res) => {
   try {
@@ -88,6 +96,12 @@ export const postSignup: ExpressCB = async (
       cart: { items: [] }
     });
     await newUser.save();
+    transporter.sendMail({
+      to: email,
+      from: 'alumedot@icloud.com',
+      subject: 'Signup success',
+      html: '<h1>You successfully signed up!</h1>'
+    }).catch(e => console.log(e));
     res.redirect('/login');
   } catch (e) {
     console.log(e);
