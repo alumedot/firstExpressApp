@@ -24,10 +24,18 @@ export const getLogin: ExpressCB = async (req, res) => {
 };
 
 export const getSignup: ExpressCB = async (req, res) => {
+  let message: string | string[] = req.flash('error');
+  if (message.length) {
+    message = message[0];
+  } else {
+    message = null;
+  }
+
   res.render('auth/signup', {
     pageTitle: 'Signup',
     path: '/signup',
-    isLoggedIn: false
+    isLoggedIn: false,
+    errorMessage: message
   });
 };
 
@@ -54,6 +62,7 @@ export const postLogin: ExpressCB = async (
       });
     }
 
+    req.flash('error', 'Invalid email or password');
     res.redirect('/login');
   } catch (e) {
     console.log(e);
@@ -61,18 +70,18 @@ export const postLogin: ExpressCB = async (
 };
 
 export const postSignup: ExpressCB = async (
-  {
-    body: { email, password, confirmPassword }
-  },
+  req,
   res
 ) => {
+  const { body: { email, password } } = req;
+
   try {
     const user = await User.findOne({ email });
     if (user) {
+      req.flash('error', 'Email already exists');
       return res.redirect('/signup');
     }
     const hashedPassword = await hash(password, 12);
-    console.log('hashedPassword', hashedPassword);
     const newUser = new User({
       email,
       password: hashedPassword,
