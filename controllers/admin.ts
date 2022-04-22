@@ -54,9 +54,11 @@ export const getEditProduct: ExpressCB = (req, res ) => {
 export const postEditProduct: ExpressCB = async (req, res ) => {
   const { productId, title, imageUrl, description, price } = req.body;
 
-  // const updatedProduct = new Product(title, price, description, imageUrl, productId);
-
   const productToUpdate = await Product.findById(productId);
+
+  if (productToUpdate.userId.toString() !== req.user._id.toString()) {
+    return res.redirect('/');
+  }
 
   productToUpdate.title = title;
   productToUpdate.price = price;
@@ -73,7 +75,7 @@ export const postEditProduct: ExpressCB = async (req, res ) => {
 
 export const getProducts: ExpressCB = (req, res, next) => {
   Product
-    .find()
+    .find({ userId: req.user._id })
     .then((products) => {
       res.render('admin/products', {
         products,
@@ -86,7 +88,7 @@ export const getProducts: ExpressCB = (req, res, next) => {
 
 export const postDeleteProduct: ExpressCB = (req, res, next) => {
   const { productId } = req.body;
-  Product.findByIdAndDelete(productId)
+  Product.deleteOne({ _id: productId, userId: req.user._id })
     .then(() => {
       console.log(`DELETED PRODUCT WITH ID - ${productId}`);
       res.redirect('/admin/products');
