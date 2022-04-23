@@ -8,7 +8,7 @@ import type { ExpressCB } from './types';
 
 const transporter = nodemailer.createTransport(sendgridTransport({
   auth: {
-    api_key: 'test', // here should be a real api key
+    api_key: process.env.SENDGRID_API_KEY
   }
 }));
 

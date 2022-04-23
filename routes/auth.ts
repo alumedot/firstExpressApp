@@ -1,5 +1,5 @@
 import express from 'express';
-import { check } from 'express-validator';
+import { check, body } from 'express-validator';
 import * as authController from '../controllers/auth';
 
 export const router = express.Router();
@@ -12,9 +12,17 @@ router.post('/login', authController.postLogin);
 
 router.post(
   '/signup',
-  check('email')
-    .isEmail()
-    .withMessage('Please enter a valid email'),
+  [
+    check('email')
+      .isEmail()
+      .withMessage('Please enter a valid email'),
+    body(
+      'password',
+      'Please enter a password with only numbers and letters, at least 6 characters'
+    )
+      .isLength({ min: 6 })
+      .isAlphanumeric()
+  ],
   authController.postSignup
 );
 

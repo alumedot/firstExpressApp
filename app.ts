@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import path from 'path'
 import express from 'express';
 import bodyParser from 'body-parser';
@@ -13,13 +14,11 @@ import { router as authRoutes } from './routes/auth';
 import { get404 } from './controllers/error';
 import { User } from './models/user';
 
-const MONGODB_URI = 'mongodb+srv://alumedot:VXrg9xp82OVDerum@cluster0.2fqy4.mongodb.net/shop';
-
 const MongoDBStore = ConnectMongoSession(session);
 
 const app = express();
 const store = new MongoDBStore({
-  uri: MONGODB_URI,
+  uri: process.env.MONGODB_URI,
   collection: 'sessions'
 });
 
@@ -72,7 +71,7 @@ app.use(authRoutes);
 app.use(get404);
 
 mongoose
-  .connect(MONGODB_URI)
+  .connect(process.env.MONGODB_URI)
   .then(() => {
     app.listen(3030);
   })
