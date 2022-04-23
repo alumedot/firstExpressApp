@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { hash, compare } from 'bcryptjs';
 import nodemailer from 'nodemailer';
 import sendgridTransport from 'nodemailer-sendgrid-transport';
+import { validationResult } from 'express-validator';
 import { User } from '../models/user';
 import type { ExpressCB } from './types';
 
@@ -83,6 +84,16 @@ export const postSignup: ExpressCB = async (
   res
 ) => {
   const { body: { email, password } } = req;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render('auth/signup', {
+      pageTitle: 'Signup',
+      path: '/signup',
+      isLoggedIn: false,
+      errorMessage: errors.array()[0].msg
+    });
+  }
 
   try {
     const user = await User.findOne({ email });
