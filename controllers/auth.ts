@@ -96,11 +96,6 @@ export const postSignup: ExpressCB = async (
   }
 
   try {
-    const user = await User.findOne({ email });
-    if (user) {
-      req.flash('error', 'Email already exists');
-      return res.redirect('/signup');
-    }
     const hashedPassword = await hash(password, 12);
     const newUser = new User({
       email,
