@@ -21,12 +21,14 @@ export const getLogin: ExpressCB = async (req, res) => {
       message = null;
     }
 
-    res.render('auth/login', {
+    return res.render('auth/login', {
       pageTitle: 'Login',
       path: '/login',
       isLoggedIn: false,
       csrfToken: req.csrfToken(),
-      errorMessage: message
+      errorMessage: message,
+      prevInput: {},
+      validationErrors: []
     });
   } catch (e) {
     console.log(e);
@@ -57,22 +59,32 @@ export const postLogin: ExpressCB = async (
 ) => {
   try {
     const errors = validationResult(req);
+    const { body: { email, password } } = req;
 
     if (!errors.isEmpty()) {
-      res.status(422).render('auth/login', {
+      return res.status(422).render('auth/login', {
         pageTitle: 'Login',
         path: '/login',
         isLoggedIn: false,
         csrfToken: req.csrfToken(),
-        errorMessage: errors.array()[0].msg
+        errorMessage: errors.array()[0].msg,
+        prevInput: { email, password },
+        validationErrors: errors.array()
       });
     }
 
     const user = await User.findOne({ email: req.body.email });
 
     if (!user) {
-      req.flash('error', 'Invalid email or password');
-      return res.redirect('/login');
+      return res.status(422).render('auth/login', {
+        pageTitle: 'Login',
+        path: '/login',
+        isLoggedIn: false,
+        csrfToken: req.csrfToken(),
+        errorMessage: 'Invalid email or password',
+        prevInput: { email, password },
+        validationErrors: []
+      });
     }
 
     const isCorrectPassword = await compare(req.body.password, user.password);
@@ -86,8 +98,15 @@ export const postLogin: ExpressCB = async (
       });
     }
 
-    req.flash('error', 'Invalid email or password');
-    res.redirect('/login');
+    return res.status(422).render('auth/login', {
+      pageTitle: 'Login',
+      path: '/login',
+      isLoggedIn: false,
+      csrfToken: req.csrfToken(),
+      errorMessage: 'Invalid email or password',
+      prevInput: { email, password },
+      validationErrors: []
+    });
   } catch (e) {
     console.log(e);
   }
@@ -201,7 +220,7 @@ export const getNewPassword: ExpressCB = async (req, res) => {
       message = null;
     }
 
-    res.render('auth/new-password', {
+    return res.render('auth/new-password', {
       pageTitle: 'New Password',
       path: '/new-password',
       errorMessage: message,
