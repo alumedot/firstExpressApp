@@ -46,7 +46,8 @@ export const getSignup: ExpressCB = async (req, res) => {
     path: '/signup',
     isLoggedIn: false,
     errorMessage: message,
-    prevInput: {}
+    prevInput: {},
+    validationErrors: []
   });
 };
 
@@ -105,7 +106,8 @@ export const postSignup: ExpressCB = async (
       path: '/signup',
       isLoggedIn: false,
       errorMessage: errors.array()[0].msg,
-      prevInput: { email, password, confirmPassword }
+      prevInput: { email, password, confirmPassword },
+      validationErrors: errors.array()
     });
   }
 
