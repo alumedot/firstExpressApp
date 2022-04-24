@@ -1,16 +1,32 @@
+import { validationResult } from 'express-validator';
 import type { ExpressCB } from './types';
 import { Product } from '../models/product'
 
 export const getAddProduct = (req, res) => {
-  res.render('admin/edit-product', {
+  return res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
-    editing: false
+    editing: false,
+    hasError: false,
+    errorMessage: null
   });
 };
 
 export const postAddProduct: ExpressCB = (req, res, next) => {
   const { title, imageUrl, price, description } = req.body;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render('admin/edit-product', {
+      product: { title, imageUrl, price, description },
+      hasError: true,
+      pageTitle: 'Add Product',
+      path: '/admin/edit-product',
+      editing: false,
+      errorMessage: errors.array()[0].msg,
+    });
+  }
+
   const product = new Product({
     title,
     imageUrl,
@@ -45,7 +61,9 @@ export const getEditProduct: ExpressCB = (req, res ) => {
         product,
         pageTitle: 'Edit Product',
         path: '/admin/edit-product',
-        editing: editMode
+        editing: editMode,
+        hasError: false,
+        errorMessage: null
       });
     })
     .catch((error) => console.log(error))
