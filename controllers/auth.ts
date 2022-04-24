@@ -45,7 +45,8 @@ export const getSignup: ExpressCB = async (req, res) => {
     pageTitle: 'Signup',
     path: '/signup',
     isLoggedIn: false,
-    errorMessage: message
+    errorMessage: message,
+    prevInput: {}
   });
 };
 
@@ -54,6 +55,18 @@ export const postLogin: ExpressCB = async (
   res
 ) => {
   try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      res.status(422).render('auth/login', {
+        pageTitle: 'Login',
+        path: '/login',
+        isLoggedIn: false,
+        csrfToken: req.csrfToken(),
+        errorMessage: errors.array()[0].msg
+      });
+    }
+
     const user = await User.findOne({ email: req.body.email });
 
     if (!user) {
@@ -83,7 +96,7 @@ export const postSignup: ExpressCB = async (
   req,
   res
 ) => {
-  const { body: { email, password } } = req;
+  const { body: { email, password, confirmPassword } } = req;
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -91,7 +104,8 @@ export const postSignup: ExpressCB = async (
       pageTitle: 'Signup',
       path: '/signup',
       isLoggedIn: false,
-      errorMessage: errors.array()[0].msg
+      errorMessage: errors.array()[0].msg,
+      prevInput: { email, password, confirmPassword }
     });
   }
 
