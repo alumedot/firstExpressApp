@@ -8,7 +8,8 @@ export const getAddProduct = (req, res) => {
     path: '/admin/add-product',
     editing: false,
     hasError: false,
-    errorMessage: null
+    errorMessage: null,
+    validationErrors: []
   });
 };
 
@@ -24,6 +25,7 @@ export const postAddProduct: ExpressCB = (req, res, next) => {
       path: '/admin/edit-product',
       editing: false,
       errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array()
     });
   }
 
@@ -63,7 +65,8 @@ export const getEditProduct: ExpressCB = (req, res ) => {
         path: '/admin/edit-product',
         editing: editMode,
         hasError: false,
-        errorMessage: null
+        errorMessage: null,
+        validationErrors: []
       });
     })
     .catch((error) => console.log(error))
@@ -71,6 +74,20 @@ export const getEditProduct: ExpressCB = (req, res ) => {
 
 export const postEditProduct: ExpressCB = async (req, res ) => {
   const { productId, title, imageUrl, description, price } = req.body;
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render('admin/edit-product', {
+      product: { title, imageUrl, price, description, _id: productId },
+      hasError: true,
+      pageTitle: 'Edit Product',
+      path: '/admin/edit-product',
+      editing: true,
+      errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array()
+    });
+  }
 
   const productToUpdate = await Product.findById(productId);
 
