@@ -11,7 +11,7 @@ import flash from 'connect-flash';
 import { router as adminRoutes } from './routes/admin';
 import { router as shopRoutes } from './routes/shop';
 import { router as authRoutes } from './routes/auth';
-import { get404 } from './controllers/error';
+import { get404, get500 } from './controllers/error';
 import { User } from './models/user';
 
 const MongoDBStore = ConnectMongoSession(session);
@@ -52,10 +52,15 @@ app.use((req, res, next) => {
 
   User.findById((req.session as any).user._id)
     .then((user) => {
+      if (!user) {
+        return next();
+      }
       (req as any).user = user;
       next();
     })
-    .catch((error) => console.log(error))
+    .catch((error) => {
+      throw new Error(error);
+    })
 })
 
 app.use((req, res, next) => {
@@ -67,6 +72,8 @@ app.use((req, res, next) => {
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
+
+app.use('/500', get500);
 
 app.use(get404);
 

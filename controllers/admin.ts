@@ -22,7 +22,7 @@ export const postAddProduct: ExpressCB = (req, res, next) => {
       product: { title, imageUrl, price, description },
       hasError: true,
       pageTitle: 'Add Product',
-      path: '/admin/edit-product',
+      path: '/admin/add-product',
       editing: false,
       errorMessage: errors.array()[0].msg,
       validationErrors: errors.array()
@@ -59,6 +59,7 @@ export const getEditProduct: ExpressCB = (req, res ) => {
       if (!product) {
         res.redirect('/');
       }
+      throw new Error('Errrrrror!');
       res.render('admin/edit-product', {
         product,
         pageTitle: 'Edit Product',
@@ -69,7 +70,9 @@ export const getEditProduct: ExpressCB = (req, res ) => {
         validationErrors: []
       });
     })
-    .catch((error) => console.log(error))
+    .catch((error) => {
+      res.redirect('/500');
+    })
 };
 
 export const postEditProduct: ExpressCB = async (req, res ) => {
