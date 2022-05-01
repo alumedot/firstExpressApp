@@ -10,7 +10,12 @@
         <% if (errorMessage) { %>
             <div class="user-message user-message--error"><%= errorMessage %></div>
         <% } %>
-        <form class="product-form" action="/admin/<% if (editing) { %>edit<% } else { %>add<% } %>-product" method="POST">
+        <form
+            class="product-form"
+            action="/admin/<% if (editing) { %>edit<% } else { %>add<% } %>-product"
+            method="POST"
+            enctype="multipart/form-data"
+        >
             <div class="form-control">
                 <label for="title">Title</label>
                 <input
@@ -22,15 +27,19 @@
                 >
             </div>
             <div class="form-control">
-                <label for="imageUrl">Image URL</label>
-                <input
-                    class="<%= validationErrors.find(e => e.param === 'imageUrl') && 'invalid' %>"
-                    type="text"
-                    name="imageUrl"
-                    id="imageUrl"
-                    value="<% if (editing || hasError) { %><%= product.imageUrl%><% } %>"
-                >
+                <label for="image">Image</label>
+                <input type="file" name="image" id="image">
             </div>
+<!--            <div class="form-control">-->
+<!--                <label for="imageUrl">Image URL</label>-->
+<!--                <input-->
+<!--                    class="<%= validationErrors.find(e => e.param === 'imageUrl') && 'invalid' %>"-->
+<!--                    type="text"-->
+<!--                    name="imageUrl"-->
+<!--                    id="imageUrl"-->
+<!--                    value="<% if (editing || hasError) { %><%= product.imageUrl%><% } %>"-->
+<!--                >-->
+<!--            </div>-->
             <div class="form-control">
                 <label for="price">Price</label>
                 <input
@@ -49,8 +58,7 @@
                     name="description"
                     id="description"
                     rows="5"
-                ><% if (editing || hasError) { %><%=product.description%><% } %>
-                </textarea>
+                ><% if (editing || hasError) { %><%=product.description%><% } %></textarea>
             </div>
             <% if (editing) { %>
                 <input type="hidden" value="<%= product._id %>" name="productId" />

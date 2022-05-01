@@ -7,7 +7,7 @@ import session from 'express-session';
 import ConnectMongoSession from 'connect-mongodb-session';
 import csrf from 'csurf';
 import flash from 'connect-flash';
-
+import multer from 'multer';
 import { router as adminRoutes } from './routes/admin';
 import { router as shopRoutes } from './routes/shop';
 import { router as authRoutes } from './routes/auth';
@@ -33,7 +33,35 @@ app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({ extended: false }));
+
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'images');
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${new Date().toISOString()}_${file.originalname}`);
+  }
+});
+
+app.use(
+  multer({
+    storage: fileStorage,
+    fileFilter: (req, file, cb) => {
+      if (
+        file.mimetype === 'image/png'
+        || file.mimetype === 'image/jpg'
+        || file.mimetype === 'image/jpeg'
+      ) {
+        cb(null, true);
+      } else {
+        cb(null, false);
+      }
+    }
+  }).single('image')
+);
+
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(session({
   secret: 'my secret',
   resave: false,
