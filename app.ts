@@ -77,6 +77,10 @@ app.use('/500', get500);
 
 app.use(get404);
 
+app.use((error, req, res, _next) => {
+  res.redirect('/500');
+});
+
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {

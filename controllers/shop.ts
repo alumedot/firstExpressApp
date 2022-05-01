@@ -2,7 +2,7 @@ import { Product } from '../models/product';
 import { Order } from '../models/order';
 import type { ExpressCB } from './types';
 
-export const getProducts: ExpressCB = async (req, res) => {
+export const getProducts: ExpressCB = async (req, res, next) => {
   Product.find()
     .then((products) => {
       res.render('shop/product-list', {
@@ -11,10 +11,14 @@ export const getProducts: ExpressCB = async (req, res) => {
         path: '/products'
       });
     })
-    .catch(error => console.log(error));
+    .catch(e => {
+      const error = new Error(e);
+      (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+      return next(error);
+    });
 };
 
-export const getProduct: ExpressCB = (req, res ) => {
+export const getProduct: ExpressCB = (req, res, next ) => {
   const prodId = req.params.productId;
   Product.findById(prodId)
     .then((product) => {
@@ -24,10 +28,14 @@ export const getProduct: ExpressCB = (req, res ) => {
         path: '/products'
       })
     })
-    .catch((error) => console.log(error));
+    .catch((e) => {
+      const error = new Error(e);
+      (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+      return next(error);
+    });
 };
 
-export const getIndex: ExpressCB = (req, res) => {
+export const getIndex: ExpressCB = (req, res, next) => {
   Product.find()
     .then((products) => {
       res.render('shop/index', {
@@ -36,7 +44,11 @@ export const getIndex: ExpressCB = (req, res) => {
         path: '/'
       });
     })
-    .catch(error => console.log(error));
+    .catch(e => {
+      const error = new Error(e);
+      (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 export const getCart: ExpressCB = async (req, res) => {
@@ -52,24 +64,32 @@ export const getCart: ExpressCB = async (req, res) => {
 export const postCart: ExpressCB = async (req, res, next) => {
   const { productId } = req.body;
 
-  const product = await Product.findById(productId);
-  await (req as any).user.addToCart(product);
+  try {
+    const product = await Product.findById(productId);
+    await (req as any).user.addToCart(product);
 
-  res.redirect('/cart');
+    res.redirect('/cart');
+  } catch (e) {
+    const error = new Error(e);
+    (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+    return next(error);
+  }
 };
 
-export const postCartDeleteProduct: ExpressCB = async (req, res) => {
+export const postCartDeleteProduct: ExpressCB = async (req, res, next) => {
   const { productId } = req.body;
 
   try {
     await (req as any).user.removeFromCart(productId);
     res.redirect('/cart');
   } catch (e) {
-    console.log(e);
+    const error = new Error(e);
+    (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+    return next(error);
   }
 }
 
-export const postOrder: ExpressCB = async (req, res) => {
+export const postOrder: ExpressCB = async (req, res, next) => {
   await (req as any).user.populate('cart.items.productId');
 
   try {
@@ -87,11 +107,13 @@ export const postOrder: ExpressCB = async (req, res) => {
     await (req as any).user.clearCart();
     res.redirect('/orders');
   } catch (e) {
-    console.log(e);
+    const error = new Error(e);
+    (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+    return next(error);
   }
 }
 
-export const getOrders: ExpressCB = async (req, res) => {
+export const getOrders: ExpressCB = async (req, res, next) => {
   try {
     const orders = await Order.find({ 'user.userId': (req as any).user._id })
 
@@ -101,6 +123,8 @@ export const getOrders: ExpressCB = async (req, res) => {
       orders
     });
   } catch (e) {
-    console.log(e);
+    const error = new Error(e);
+    (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+    return next(error);
   }
 };

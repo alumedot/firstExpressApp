@@ -43,10 +43,14 @@ export const postAddProduct: ExpressCB = (req, res, next) => {
       console.log('Created Product');
       res.redirect('/admin/products');
     })
-    .catch((error) => console.log(error));
+    .catch((err) => {
+      const error = new Error(err);
+      (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+      return next(error);
+    });
 };
 
-export const getEditProduct: ExpressCB = (req, res ) => {
+export const getEditProduct: ExpressCB = (req, res, next ) => {
   const editMode = req.query.edit;
   if (!editMode) {
     res.redirect('/');
@@ -59,7 +63,6 @@ export const getEditProduct: ExpressCB = (req, res ) => {
       if (!product) {
         res.redirect('/');
       }
-      throw new Error('Errrrrror!');
       res.render('admin/edit-product', {
         product,
         pageTitle: 'Edit Product',
@@ -70,12 +73,14 @@ export const getEditProduct: ExpressCB = (req, res ) => {
         validationErrors: []
       });
     })
-    .catch((error) => {
-      res.redirect('/500');
+    .catch((err) => {
+      const error = new Error(err);
+      (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+      return next(error);
     })
 };
 
-export const postEditProduct: ExpressCB = async (req, res ) => {
+export const postEditProduct: ExpressCB = async (req, res, next ) => {
   const { productId, title, imageUrl, description, price } = req.body;
 
   const errors = validationResult(req);
@@ -108,7 +113,11 @@ export const postEditProduct: ExpressCB = async (req, res ) => {
       console.log('UPDATED PRODUCT');
       res.redirect('/admin/products');
     })
-    .catch((error) => console.log(error))
+    .catch((err) => {
+      const error = new Error(err);
+      (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+      return next(error);
+    })
 }
 
 export const getProducts: ExpressCB = (req, res, next) => {
@@ -121,7 +130,11 @@ export const getProducts: ExpressCB = (req, res, next) => {
         path: '/admin/products'
       });
     })
-    .catch((error) => console.log(error));
+    .catch((err) => {
+      const error = new Error(err);
+      (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+      return next(error);
+    })
 };
 
 export const postDeleteProduct: ExpressCB = (req, res, next) => {
@@ -131,5 +144,9 @@ export const postDeleteProduct: ExpressCB = (req, res, next) => {
       console.log(`DELETED PRODUCT WITH ID - ${productId}`);
       res.redirect('/admin/products');
     })
-    .catch((error) => console.log(error))
+    .catch((err) => {
+      const error = new Error(err);
+      (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+      return next(error);
+    })
 }

@@ -55,7 +55,8 @@ export const getSignup: ExpressCB = async (req, res) => {
 
 export const postLogin: ExpressCB = async (
   req,
-  res
+  res,
+  next
 ) => {
   try {
     const errors = validationResult(req);
@@ -108,13 +109,16 @@ export const postLogin: ExpressCB = async (
       validationErrors: []
     });
   } catch (e) {
-    console.log(e);
+    const error = new Error(e);
+    (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+    return next(error);
   }
 };
 
 export const postSignup: ExpressCB = async (
   req,
-  res
+  res,
+  next
 ) => {
   const { body: { email, password, confirmPassword } } = req;
   const errors = validationResult(req);
@@ -146,7 +150,9 @@ export const postSignup: ExpressCB = async (
     }).catch(e => console.log(e));
     res.redirect('/login');
   } catch (e) {
-    console.log(e);
+    const error = new Error(e);
+    (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+    return next(error);
   }
 }
 
@@ -171,7 +177,7 @@ export const getReset: ExpressCB = (req, res) => {
   });
 }
 
-export const postReset: ExpressCB = async (req, res) => {
+export const postReset: ExpressCB = async (req, res, next) => {
   crypto.randomBytes(32, async (err, buffer) => {
     if (err) {
       console.log(err);
@@ -199,12 +205,14 @@ export const postReset: ExpressCB = async (req, res) => {
       }).catch(e => console.log(e));
       res.redirect('/');
     } catch (e) {
-      console.log(e);
+      const error = new Error(e);
+      (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+      return next(error);
     }
   })
 }
 
-export const getNewPassword: ExpressCB = async (req, res) => {
+export const getNewPassword: ExpressCB = async (req, res, next) => {
   const token = req.params.token;
 
   try {
@@ -228,11 +236,13 @@ export const getNewPassword: ExpressCB = async (req, res) => {
       passwordToken: token
     });
   } catch (e) {
-    console.log(e);
+    const error = new Error(e);
+    (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+    return next(error);
   }
 }
 
-export const postNewPassword: ExpressCB = async (req, res) => {
+export const postNewPassword: ExpressCB = async (req, res, next) => {
   const { password, userId, passwordToken } = req.body;
 
   try {
@@ -249,6 +259,8 @@ export const postNewPassword: ExpressCB = async (req, res) => {
 
     res.redirect('/login');
   } catch (e) {
-    console.log(e);
+    const error = new Error(e);
+    (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+    return next(error);
   }
 }
