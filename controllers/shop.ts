@@ -131,16 +131,33 @@ export const getOrders: ExpressCB = async (req, res, next) => {
   }
 };
 
-export const getInvoice: ExpressCB = (req, res, next) => {
+export const getInvoice: ExpressCB = async (req, res, next) => {
   const { orderId } = req.params;
-  const invoiceName = 'invoice-' + orderId + '.pdf';
-  const invoicePath = path.join('data', 'invoices', invoiceName);
 
-  fs.readFile(invoicePath, (e, data) => {
-    if (e) {
-      return next();
+  try {
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return next(new Error('No order found'));
     }
 
-    res.send(data);
-  });
+    if (order.user.userId.toString() !== req.user._id.toString()) {
+      return next(new Error('Unauthorized'));
+    }
+
+    const invoiceName = 'invoice-' + orderId + '.pdf';
+    const invoicePath = path.join('data', 'invoices', invoiceName);
+
+    fs.readFile(invoicePath, (e, data) => {
+      if (e) {
+        return next();
+      }
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename="${invoiceName}"`);
+      res.send(data);
+    });
+  } catch (e) {
+    next(e);
+  }
 }
