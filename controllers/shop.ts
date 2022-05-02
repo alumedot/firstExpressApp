@@ -141,6 +141,8 @@ export const getInvoice: ExpressCB = (req, res, next) => {
       return next();
     }
 
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="${invoiceName}"`);
     res.send(data);
   });
 }
