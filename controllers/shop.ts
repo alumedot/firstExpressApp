@@ -1,4 +1,3 @@
-import fs from 'fs';
 import path from 'path';
 import { Product } from '../models/product';
 import { Order } from '../models/order';
@@ -148,15 +147,8 @@ export const getInvoice: ExpressCB = async (req, res, next) => {
     const invoiceName = 'invoice-' + orderId + '.pdf';
     const invoicePath = path.join('data', 'invoices', invoiceName);
 
-    fs.readFile(invoicePath, (e, data) => {
-      if (e) {
-        return next();
-      }
-
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `inline; filename="${invoiceName}"`);
-      res.send(data);
-    });
+    res.setHeader('Content-Disposition', `inline; filename="${invoiceName}"`);
+    res.sendFile(invoicePath, { root: '.' });
   } catch (e) {
     next(e);
   }
