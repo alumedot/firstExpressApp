@@ -1,4 +1,6 @@
 import path from 'path';
+import fs from 'fs';
+import PDFDocument from 'pdfkit';
 import { Product } from '../models/product';
 import { Order } from '../models/order';
 import type { ExpressCB } from './types';
@@ -147,8 +149,30 @@ export const getInvoice: ExpressCB = async (req, res, next) => {
     const invoiceName = 'invoice-' + orderId + '.pdf';
     const invoicePath = path.join('data', 'invoices', invoiceName);
 
+    const pdfDoc = new PDFDocument();
+
+    res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `inline; filename="${invoiceName}"`);
-    res.sendFile(invoicePath, { root: '.' });
+
+    pdfDoc.pipe(fs.createWriteStream(invoicePath));
+    pdfDoc.pipe(res);
+
+    pdfDoc.fontSize(26).text('Invoice');
+
+    pdfDoc.text('----------------');
+
+    let totalPrice = 0;
+
+    order.products.forEach((prod) => {
+      totalPrice += prod.quantity * prod.product.price;
+      pdfDoc.fontSize(14).text(`${prod.product.title} - ${prod.quantity} x $${prod.product.price}`);
+    })
+
+    pdfDoc.fontSize(20).text('- - -');
+
+    pdfDoc.fontSize(14).text(`Total Price: $${totalPrice}`);
+
+    pdfDoc.end();
   } catch (e) {
     next(e);
   }
