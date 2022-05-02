@@ -159,7 +159,7 @@ export const getInvoice: ExpressCB = async (req, res, next) => {
 
     pdfDoc.fontSize(26).text('Invoice');
 
-    pdfDoc.text('----------------');
+    pdfDoc.text('-------------');
 
     let totalPrice = 0;
 

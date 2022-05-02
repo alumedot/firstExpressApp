@@ -1,6 +1,7 @@
 import { validationResult } from 'express-validator';
-import type { ExpressCB } from './types';
+import { deleteFile } from '../util/file';
 import { Product } from '../models/product'
+import type { ExpressCB } from './types';
 
 export const getAddProduct = (req, res) => {
   return res.render('admin/edit-product', {
@@ -123,6 +124,7 @@ export const postEditProduct: ExpressCB = async (req, res, next ) => {
   productToUpdate.price = price;
   productToUpdate.description = description;
   if (image) {
+    deleteFile(productToUpdate.imageUrl);
     productToUpdate.imageUrl = image.path;
   }
 
@@ -155,16 +157,25 @@ export const getProducts: ExpressCB = (req, res, next) => {
     })
 };
 
-export const postDeleteProduct: ExpressCB = (req, res, next) => {
+export const postDeleteProduct: ExpressCB = async (req, res, next) => {
   const { productId } = req.body;
-  Product.deleteOne({ _id: productId, userId: req.user._id })
-    .then(() => {
-      console.log(`DELETED PRODUCT WITH ID - ${productId}`);
-      res.redirect('/admin/products');
-    })
-    .catch((err) => {
-      const error = new Error(err);
-      (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
-      return next(error);
-    })
+
+  try {
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return next(new Error('Product not found'));
+    }
+
+    deleteFile(product.imageUrl);
+
+    await Product.deleteOne({ _id: productId, userId: req.user._id })
+
+    console.log(`DELETED PRODUCT WITH ID - ${productId}`);
+    res.redirect('/admin/products');
+  } catch (e) {
+    const error = new Error(e);
+    (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+    return next(error);
+  }
 }
