@@ -5,6 +5,8 @@ import { Product } from '../models/product';
 import { Order } from '../models/order';
 import type { ExpressCB } from './types';
 
+const ITEMS_LIMIT = 1;
+
 export const getProducts: ExpressCB = async (req, res, next) => {
   Product.find()
     .then((products) => {
@@ -38,20 +40,32 @@ export const getProduct: ExpressCB = (req, res, next ) => {
     });
 };
 
-export const getIndex: ExpressCB = (req, res, next) => {
-  Product.find()
-    .then((products) => {
-      res.render('shop/index', {
-        products,
-        pageTitle: 'Shop',
-        path: '/'
-      });
-    })
-    .catch(e => {
-      const error = new Error(e);
-      (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
-      return next(error);
+export const getIndex: ExpressCB = async (req, res, next) => {
+  const page = +req.query.page || 1;
+
+  try {
+    const totalProducts = await Product.find().countDocuments();
+
+    const products = await Product.find()
+      .skip((page - 1) * ITEMS_LIMIT)
+      .limit(ITEMS_LIMIT);
+
+    res.render('shop/index', {
+      products,
+      pageTitle: 'Shop',
+      path: '/',
+      currentPage: page,
+      hasNextPage: ITEMS_LIMIT * page < totalProducts,
+      hasPrevPage: page > 1,
+      nextPage: page + 1,
+      prevPage: page - 1,
+      lastPage: Math.ceil(totalProducts / ITEMS_LIMIT)
     });
+  } catch (e) {
+    const error = new Error(e);
+    (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+    return next(error);
+  }
 };
 
 export const getCart: ExpressCB = async (req, res) => {
