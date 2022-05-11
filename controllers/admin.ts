@@ -157,8 +157,8 @@ export const getProducts: ExpressCB = (req, res, next) => {
     })
 };
 
-export const postDeleteProduct: ExpressCB = async (req, res, next) => {
-  const { productId } = req.body;
+export const deleteProduct: ExpressCB = async (req, res, next) => {
+  const { productId } = req.params;
 
   try {
     const product = await Product.findById(productId);
@@ -172,10 +172,12 @@ export const postDeleteProduct: ExpressCB = async (req, res, next) => {
     await Product.deleteOne({ _id: productId, userId: req.user._id })
 
     console.log(`DELETED PRODUCT WITH ID - ${productId}`);
-    res.redirect('/admin/products');
+    res.status(200).json({
+      message: 'Success!'
+    });
   } catch (e) {
-    const error = new Error(e);
-    (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
-    return next(error);
+    res.status(500).json({
+      message: 'Deleting product failed'
+    });
   }
 }
