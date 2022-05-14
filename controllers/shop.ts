@@ -80,14 +80,20 @@ export const getIndex: ExpressCB = async (req, res, next) => {
   }
 };
 
-export const getCart: ExpressCB = async (req, res) => {
-  await (req as any).user.populate('cart.items.productId');
+export const getCart: ExpressCB = async (req, res, next) => {
+  try {
+    await (req as any).user.populate('cart.items.productId');
 
-  res.render('shop/cart', {
-    pageTitle: 'Your Cart',
-    path: '/cart',
-    products: (req as any).user.cart.items
-  });
+    res.render('shop/cart', {
+      pageTitle: 'Your Cart',
+      path: '/cart',
+      products: (req as any).user.cart.items
+    });
+  } catch (e) {
+    const error = new Error(e);
+    (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+    return next(error);
+  }
 };
 
 export const postCart: ExpressCB = async (req, res, next) => {
@@ -111,6 +117,28 @@ export const postCartDeleteProduct: ExpressCB = async (req, res, next) => {
   try {
     await (req as any).user.removeFromCart(productId);
     res.redirect('/cart');
+  } catch (e) {
+    const error = new Error(e);
+    (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+    return next(error);
+  }
+}
+
+export const getCheckout: ExpressCB = async (req, res, next) => {
+  try {
+    await (req as any).user.populate('cart.items.productId');
+    let total = 0;
+
+    (req as any).user.cart.items.forEach((product) => {
+      total += product.quantity * product.productId.price;
+    })
+
+    res.render('shop/checkout', {
+      pageTitle: 'Checkout',
+      path: '/checkout',
+      products: (req as any).user.cart.items,
+      totalSum: total,
+    });
   } catch (e) {
     const error = new Error(e);
     (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
