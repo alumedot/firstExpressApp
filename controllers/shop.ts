@@ -1,9 +1,12 @@
 import path from 'path';
 import fs from 'fs';
 import PDFDocument from 'pdfkit';
+import Stripe from 'stripe';
 import { Product } from '../models/product';
 import { Order } from '../models/order';
 import type { ExpressCB } from './types';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: null });
 
 const ITEMS_LIMIT = 2;
 
@@ -129,16 +132,56 @@ export const getCheckout: ExpressCB = async (req, res, next) => {
     await (req as any).user.populate('cart.items.productId');
     let total = 0;
 
-    (req as any).user.cart.items.forEach((product) => {
+    const products = (req as any).user.cart.items;
+
+    products.forEach((product) => {
       total += product.quantity * product.productId.price;
     })
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: products.map(({ productId, quantity }) => ({
+        name: productId.title,
+        description: productId.description,
+        amount: productId.price * 100,
+        currency: 'usd',
+        quantity
+      })),
+      success_url: `${req.protocol}://${req.get('host')}/checkout/success`,
+      cancel_url: `${req.protocol}://${req.get('host')}/checkout/cancel`
+    });
 
     res.render('shop/checkout', {
       pageTitle: 'Checkout',
       path: '/checkout',
       products: (req as any).user.cart.items,
       totalSum: total,
+      sessionId: session.id
     });
+  } catch (e) {
+    const error = new Error(e);
+    (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
+    return next(error);
+  }
+}
+
+export const getCheckoutSuccess: ExpressCB = async (req, res, next) => {
+  await (req as any).user.populate('cart.items.productId');
+
+  try {
+    const order = new Order({
+      user: {
+        email: (req as any).user.email,
+        userId: (req as any).user
+      },
+      products: (req as any).user.cart.items.map((item) => ({
+        quantity: item.quantity,
+        product: { ...item.productId._doc }
+      }))
+    });
+    await order.save();
+    await (req as any).user.clearCart();
+    res.redirect('/orders');
   } catch (e) {
     const error = new Error(e);
     (error as Error & { httpStatusCode: number }).httpStatusCode = 500;
