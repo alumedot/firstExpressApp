@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import path from 'path'
+import fs from 'fs';
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
@@ -8,6 +9,9 @@ import ConnectMongoSession from 'connect-mongodb-session';
 import csrf from 'csurf';
 import flash from 'connect-flash';
 import multer from 'multer';
+import helmet from 'helmet';
+import compression from 'compression';
+import morgan from 'morgan';
 import { router as adminRoutes } from './routes/admin';
 import { router as shopRoutes } from './routes/shop';
 import { router as authRoutes } from './routes/auth';
@@ -69,6 +73,13 @@ app.use(session({
   store
 }));
 
+app.use(helmet());
+app.use(compression());
+
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
+
+app.use(morgan('combined', { stream: accessLogStream }));
+
 app.use(csrfProtection);
 
 app.use(flash());
@@ -119,7 +130,7 @@ app.use((error, req, res, _next) => {
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
-    app.listen(3030);
+    app.listen(process.env.PORT || 3030);
   })
   .catch((error) => console.log(error));
 
