@@ -1,5 +1,5 @@
 {
   "watch": ["app.ts", "routes"],
-  "exec": "node --loader ts-node/esm app.ts",
+  "exec": "ts-node app.ts",
   "ext": ".js, .ts"
 }

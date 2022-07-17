@@ -130,6 +130,10 @@ app.use((error, req, res, _next) => {
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
+    // example with manually setting a cerificate
+    // https
+    //   .createServer({ key: privateKey, cert: certificate }, app)
+    //   .listen(process.env.PORT || 3030);
     app.listen(process.env.PORT || 3030);
   })
   .catch((error) => console.log(error));
